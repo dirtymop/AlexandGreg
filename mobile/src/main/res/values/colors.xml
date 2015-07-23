@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Define all color values here.-->
+    <item name="lightgray" type="color">#FAFAFA</item>
+
+    <!-- Add all color values to the colors array -->
+    <integer-array name="androidcolors">
+        <item>@color/lightgray</item>
+    </integer-array>
+
+</resources>

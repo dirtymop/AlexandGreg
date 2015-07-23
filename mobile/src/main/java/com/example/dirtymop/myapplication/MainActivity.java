@@ -14,6 +14,7 @@ import com.example.dirtymop.myapplication.interfaces.HomeInteractionListener;
 import com.example.dirtymop.myapplication.interfaces.MenuInteractionListener;
 
 
+// TODO: Need to implement the InteractionListener methods AFTER creating them in the interface files.
 public class MainActivity extends Activity implements HomeInteractionListener,
         MenuInteractionListener, HistoryInteractionListener {
 

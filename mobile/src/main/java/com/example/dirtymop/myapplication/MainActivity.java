@@ -2,6 +2,8 @@ package com.example.dirtymop.myapplication;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -14,6 +16,12 @@ import com.example.dirtymop.myapplication.interfaces.MenuInteractionListener;
 
 public class MainActivity extends Activity implements HomeInteractionListener,
         MenuInteractionListener, HistoryInteractionListener {
+
+    // Fragment objects.
+    private Fragment history, home, menu;
+
+    // Fragment manager object.
+    private FragmentManager fm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {

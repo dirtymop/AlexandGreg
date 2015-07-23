@@ -7,11 +7,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 import com.example.dirtymop.myapplication.interfaces.HomeInteractionListener;
 import com.example.dirtymop.myapplication.interfaces.MenuInteractionListener;
 
 
-public class MainActivity extends Activity implements HomeInteractionListener, MenuInteractionListener {
+public class MainActivity extends Activity implements HomeInteractionListener,
+        MenuInteractionListener, HistoryInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {

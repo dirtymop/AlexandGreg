@@ -9,10 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.dirtymop.myapplication.R;
-import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
-
-public class HistoryFragment extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link History.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link History#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class History extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -22,7 +28,7 @@ public class HistoryFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private HistoryInteractionListener mListener;
+    private OnFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -30,11 +36,11 @@ public class HistoryFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HistoryFragment.
+     * @return A new instance of fragment History.
      */
     // TODO: Rename and change types and number of parameters
-    public static HistoryFragment newInstance(String param1, String param2) {
-        HistoryFragment fragment = new HistoryFragment();
+    public static History newInstance(String param1, String param2) {
+        History fragment = new History();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -42,7 +48,7 @@ public class HistoryFragment extends Fragment {
         return fragment;
     }
 
-    public HistoryFragment() {
+    public History() {
         // Required empty public constructor
     }
 
@@ -73,10 +79,10 @@ public class HistoryFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (HistoryInteractionListener) activity;
+            mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement HistoryInteractionListener");
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -84,6 +90,21 @@ public class HistoryFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void onFragmentInteraction(Uri uri);
     }
 
 }

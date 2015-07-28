@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 public class HomeActivity extends Activity {
 
+    private static final String TAG_FRAG_HISTORY = "history_fragment";
+    private static final String TAG_FRAG_START = "start_fragment";
+
     private FragmentManager fm;
 
     private Fragment history, start;
@@ -21,7 +24,16 @@ public class HomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // Initialize the fragment manager.
         fm = getFragmentManager();
+
+        // Initialize home screen fragments.
+        history = fm.findFragmentByTag(TAG_FRAG_HISTORY);
+        start = fm.findFragmentByTag(TAG_FRAG_START);
+
+        // Populate fragments on view.
+        if (history == null) {
+        }
     }
 
     @Override
@@ -45,6 +57,7 @@ public class HomeActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
 
     // Simple method for creating a new toast.
     public void newToast(String string) {

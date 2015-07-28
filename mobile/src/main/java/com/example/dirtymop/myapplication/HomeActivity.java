@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.fragments.History;
+import com.example.dirtymop.myapplication.fragments.StartMini;
 
 
 public class HomeActivity extends Activity {
@@ -19,7 +20,7 @@ public class HomeActivity extends Activity {
 
     private FragmentManager fm;
 
-    private Fragment history, start;
+    private Fragment history, startMini;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +32,12 @@ public class HomeActivity extends Activity {
 
         // Initialize home screen fragments.
         history = fm.findFragmentByTag(TAG_FRAG_HISTORY);
-        start = fm.findFragmentByTag(TAG_FRAG_START);
+        startMini = fm.findFragmentByTag(TAG_FRAG_START);
 
         // Populate history fragment on view.
-        if (start == null) {
-            start = History.newInstance("a","z");
-            fm.beginTransaction().replace(R.id.homeTop, start, TAG_FRAG_START);
+        if (startMini == null) {
+            startMini = StartMini.newInstance("a", "z");
+            fm.beginTransaction().replace(R.id.homeTop, startMini, TAG_FRAG_START);
         }
 
         // Populate history fragment on view.

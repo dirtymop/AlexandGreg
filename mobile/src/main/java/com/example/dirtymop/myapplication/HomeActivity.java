@@ -3,6 +3,7 @@ package com.example.dirtymop.myapplication;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,9 +12,11 @@ import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.fragments.History;
 import com.example.dirtymop.myapplication.fragments.StartMini;
+import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends Activity implements StartMini.OnFragmentInteractionListener,
+        HistoryInteractionListener {
 
     private static final String TAG_FRAG_HISTORY = "history_fragment";
     private static final String TAG_FRAG_START = "start_fragment";
@@ -34,24 +37,20 @@ public class HomeActivity extends Activity {
         history = fm.findFragmentByTag(TAG_FRAG_HISTORY);
         startMini = fm.findFragmentByTag(TAG_FRAG_START);
 
-        Toast.makeText(getApplicationContext(), "onCreate", Toast.LENGTH_SHORT).show();
+
 
         // Populate history fragment on view.
         if (startMini == null) {
             startMini = StartMini.newInstance("a", "z");
-            fm.beginTransaction().replace(R.id.homeTop, startMini, TAG_FRAG_START);
-        } else {
-            startMini = StartMini.newInstance("a", "z");
-            fm.beginTransaction().replace(R.id.homeTop, startMini, TAG_FRAG_START);
+            fm.beginTransaction().replace(R.id.homeTop, startMini, TAG_FRAG_START).commit();
+            Toast.makeText(getApplicationContext(), "added startMini", Toast.LENGTH_SHORT).show();
         }
 
         // Populate history fragment on view.
         if (history == null) {
             history = History.newInstance("a","z");
-            fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY);
-        } else {
-            history = History.newInstance("a","z");
-            fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY);
+            fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY).commit();
+            Toast.makeText(getApplicationContext(), "added history", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -81,5 +80,10 @@ public class HomeActivity extends Activity {
     // Simple method for creating a new toast.
     public void newToast(String string) {
         Toast.makeText(getApplicationContext(), string, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

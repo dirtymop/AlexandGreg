@@ -34,14 +34,22 @@ public class HomeActivity extends Activity {
         history = fm.findFragmentByTag(TAG_FRAG_HISTORY);
         startMini = fm.findFragmentByTag(TAG_FRAG_START);
 
+        Toast.makeText(getApplicationContext(), "onCreate", Toast.LENGTH_SHORT).show();
+
         // Populate history fragment on view.
         if (startMini == null) {
+            startMini = StartMini.newInstance("a", "z");
+            fm.beginTransaction().replace(R.id.homeTop, startMini, TAG_FRAG_START);
+        } else {
             startMini = StartMini.newInstance("a", "z");
             fm.beginTransaction().replace(R.id.homeTop, startMini, TAG_FRAG_START);
         }
 
         // Populate history fragment on view.
         if (history == null) {
+            history = History.newInstance("a","z");
+            fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY);
+        } else {
             history = History.newInstance("a","z");
             fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY);
         }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.fragments.History;
@@ -34,7 +35,9 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryEntry> implements V
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Initialize layout inflater object.
-        LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        Toast.makeText(getContext(), "getView", Toast.LENGTH_SHORT).show();
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // Inflate the entry layout.
         final View row = inflater.inflate(R.layout.history_entry_layout, parent, false);

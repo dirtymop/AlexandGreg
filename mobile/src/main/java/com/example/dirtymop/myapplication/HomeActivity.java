@@ -1,18 +1,27 @@
 package com.example.dirtymop.myapplication;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 public class HomeActivity extends Activity {
+
+    private FragmentManager fm;
+
+    private Fragment history, start;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        fm = getFragmentManager();
     }
 
     @Override
@@ -35,5 +44,10 @@ public class HomeActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // Simple method for creating a new toast.
+    public void newToast(String string) {
+        Toast.makeText(getApplicationContext(), string, Toast.LENGTH_SHORT).show();
     }
 }

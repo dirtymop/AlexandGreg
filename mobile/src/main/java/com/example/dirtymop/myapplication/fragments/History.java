@@ -7,9 +7,15 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.dirtymop.myapplication.R;
+import com.example.dirtymop.myapplication.classes.HistoryEntry;
+import com.example.dirtymop.myapplication.classes.HistoryEntryAdapter;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
+
+import java.util.ArrayList;
 
 
 public class History extends Fragment {
@@ -22,16 +28,23 @@ public class History extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    // Interface object
     private HistoryInteractionListener listener;
 
+    // Array adpater object
+    private HistoryEntryAdapter adapter;
+
+    // XML elements
+    private ListView entries;
+
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment History.
-     */
+    * Use this factory method to create a new instance of
+    * this fragment using the provided parameters.
+    *
+            * @param param1 Parameter 1.
+            * @param param2 Parameter 2.
+            * @return A new instance of fragment History.
+            */
     // TODO: Rename and change types and number of parameters
     public static History newInstance(String param1, String param2) {
         History fragment = new History();
@@ -59,7 +72,17 @@ public class History extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false);
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
+
+        // Initialize the ListView.
+        entries = (ListView) view.findViewById(R.id.historyList);
+        entries.setDivider(null);
+        entries.setDividerHeight(0);
+
+        adapter = new HistoryEntryAdapter();
+
+        // Return the view.
+        return view;
     }
 
     @Override
@@ -78,5 +101,12 @@ public class History extends Fragment {
         super.onDetach();
         listener = null;
     }
+
+//    private class HistoryEntryAdapter extends ArrayAdapter<HistoryEntry> implements View.OnClickListener {
+//        @Override
+//        public void onClick(View v) {
+//
+//        }
+//    }
 
 }

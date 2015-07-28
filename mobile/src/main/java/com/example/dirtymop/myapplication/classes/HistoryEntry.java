@@ -15,7 +15,7 @@ public class HistoryEntry {
 
 
     // Constructor
-    public void HistoryEntry(String map, float latitude, float longitude, float distance, float calories, float speed) {
+    public HistoryEntry(String map, float latitude, float longitude, float distance, float calories, float speed) {
         this.map = map;
         this.latitude = latitude;
         this.longitude = longitude;

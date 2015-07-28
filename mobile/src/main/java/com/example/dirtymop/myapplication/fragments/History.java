@@ -79,7 +79,14 @@ public class History extends Fragment {
         entries.setDivider(null);
         entries.setDividerHeight(0);
 
-        adapter = new HistoryEntryAdapter();
+        // Dummy entries
+        ArrayList<HistoryEntry> temp = new ArrayList<HistoryEntry>();
+        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0));
+
+        // Initialize adapter
+        adapter = new HistoryEntryAdapter(getActivity().getApplicationContext(), temp);
+
+        entries.setAdapter(adapter);
 
         // Return the view.
         return view;

@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.dirtymop.myapplication.fragments.History;
+
 
 public class HomeActivity extends Activity {
 
@@ -31,8 +33,16 @@ public class HomeActivity extends Activity {
         history = fm.findFragmentByTag(TAG_FRAG_HISTORY);
         start = fm.findFragmentByTag(TAG_FRAG_START);
 
-        // Populate fragments on view.
+        // Populate history fragment on view.
+        if (start == null) {
+            start = History.newInstance("a","z");
+            fm.beginTransaction().replace(R.id.homeTop, start, TAG_FRAG_START);
+        }
+
+        // Populate history fragment on view.
         if (history == null) {
+            history = History.newInstance("a","z");
+            fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY);
         }
     }
 

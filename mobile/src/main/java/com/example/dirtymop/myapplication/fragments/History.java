@@ -78,6 +78,9 @@ public class History extends Fragment {
         // Dummy entries
         ArrayList<HistoryEntry> temp = new ArrayList<HistoryEntry>();
         temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
+        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
+        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
+        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
 
         // Initialize adapter
         adapter = new HistoryEntryAdapter(getActivity().getApplicationContext(), temp);

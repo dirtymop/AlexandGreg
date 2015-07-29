@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
@@ -41,6 +42,10 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryEntry> implements V
 
         // Inflate the entry layout.
         final View row = inflater.inflate(R.layout.history_entry_layout, parent, false);
+
+        // Link XML items to Java objects
+        ProgressBar historyProgress = (ProgressBar) row.findViewById(R.id.historyProgress);
+        historyProgress.setVisibility(View.VISIBLE); // Set progress bar to visible
 
         return row;
     }

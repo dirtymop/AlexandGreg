@@ -37,7 +37,7 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryEntry> implements V
     public View getView(int position, View convertView, ViewGroup parent) {
         // Initialize layout inflater object.
 
-        Toast.makeText(getContext(), "getView", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "getView", Toast.LENGTH_SHORT).show();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // Inflate the entry layout.

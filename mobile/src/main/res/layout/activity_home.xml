@@ -26,7 +26,8 @@
             android:layout_height="wrap_content"
             android:background="@color/red"
             android:textColor="@color/lightgray"
-            android:text="Velo"
+            android:textAllCaps="false"
+            android:text="tap to Velo"
             android:id="@+id/goToSelectMap"
             android:layout_gravity="center" />
 

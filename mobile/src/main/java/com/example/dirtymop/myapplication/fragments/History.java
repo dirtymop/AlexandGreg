@@ -1,19 +1,17 @@
 package com.example.dirtymop.myapplication.fragments;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.classes.HistoryEntry;
-import com.example.dirtymop.myapplication.classes.HistoryEntryAdapter;
+import com.example.dirtymop.myapplication.adapters.HistoryEntryAdapter;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
 import java.util.ArrayList;

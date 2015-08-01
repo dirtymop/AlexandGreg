@@ -33,9 +33,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                return NewMapSelection.newInstance("a", "z");
-            case 1:
                 return StoredMapSelection.newInstance("a", "z");
+            case 1:
+                return NewMapSelection.newInstance("a", "z");
 
         }
 

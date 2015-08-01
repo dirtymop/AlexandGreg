@@ -2,6 +2,7 @@ package com.example.dirtymop.myapplication;
 
 import java.util.Locale;
 
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -48,6 +49,7 @@ public class RoutePlannerActivity extends AppCompatActivity implements ActionBar
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setTitle(R.string.app_name);
 
         // Initialize names of all the tabs.
         tabs = new String[] {"Your Routes", "Create New"};

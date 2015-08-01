@@ -1,4 +1,4 @@
-package com.example.dirtymop.myapplication.classes;
+package com.example.dirtymop.myapplication.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
+import com.example.dirtymop.myapplication.classes.HistoryEntry;
 import com.example.dirtymop.myapplication.fragments.History;
 
 import java.util.ArrayList;

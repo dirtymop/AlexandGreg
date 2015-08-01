@@ -1,10 +1,25 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.dirtymop.myapplication.fragments.StoredMapSelection">
+    android:orientation="vertical"
+    tools:context="com.example.dirtymop.myapplication.fragments.StoredMapSelection"
+    android:weightSum="1">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="stored map selection" />
+    <TextView android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:text="Select a stored route..."
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@color/blue"
+        android:textColor="@color/lightgray"/>
 
-</FrameLayout>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.9"
+        android:id="@+id/storageList"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

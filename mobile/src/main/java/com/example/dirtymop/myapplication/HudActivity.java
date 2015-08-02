@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 public class HudActivity extends Activity {
 
-    TextView latitude, longitude, accuracy;
+    TextView latitude, longitude, accuracy, altitude;
     private int LOCATION_DISTANCE_REFRESH = 0;  // meters
     private int LOCATION_TIME_REFRESH = 500;    // milliseconds
 
@@ -37,6 +37,7 @@ public class HudActivity extends Activity {
         latitude = (TextView) findViewById(R.id.latitude);
         longitude = (TextView) findViewById(R.id.longitude);
         accuracy = (TextView) findViewById(R.id.accuracy);
+        altitude = (TextView) findViewById(R.id.altitude);
 
         // -----------------
         // Location Services
@@ -54,6 +55,7 @@ public class HudActivity extends Activity {
                 latitude.setText("Latitude: " + String.valueOf(location.getLatitude()));
                 longitude.setText("Longitude: " + String.valueOf(location.getLongitude()));
                 accuracy.setText("Accuracy: " + String.valueOf(location.getAccuracy()));
+                altitude.setText("Altitude: " + String.valueOf(location.getAltitude()));
             }
 
             @Override

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 import com.example.dirtymop.myapplication.interfaces.HomeInteractionListener;
 import com.example.dirtymop.myapplication.interfaces.MenuInteractionListener;
@@ -32,7 +33,19 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         // Dummy button to start home activity.
+        Button g=(Button)findViewById(R.id.settingButton);
         Button b = (Button) findViewById(R.id.homeButton);
+
+        g.setOnClickListener (new View.OnClickListener(){
+            @Override public void onClick(View v)
+            {
+                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

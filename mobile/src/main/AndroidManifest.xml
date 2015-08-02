@@ -28,6 +28,10 @@
             android:name=".RoutePlannerActivity"
             android:label="@string/title_activity_route_planner" >
         </activity>
+        <activity
+            android:name=".HudActivity"
+            android:label="@string/title_activity_hud" >
+        </activity>
     </application>
 
 </manifest>

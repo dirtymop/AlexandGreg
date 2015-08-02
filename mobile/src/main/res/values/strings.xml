@@ -23,6 +23,7 @@
     <string name="users">Users</string>
     <string name="title_activity_setting">SettingActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_hud">HudActivity</string>
 
 
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Units">
+        <CheckBoxPreference android:key="checkbox_preference"
+            android:title="Imperial"
+            android:summary="Distance in Miles" />
+        <CheckBoxPreference
+            android:title="Metric"
+            android:summary="Distance in Kilometers"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Watch">
+        <PreferenceScreen >
+            <PreferenceCategory android:title="Units">
+                <CheckBoxPreference android:key="checkbox_preference"
+                    android:title="Imperial"
+                    android:summary="Distance in Miles" />
+                <CheckBoxPreference
+                    android:title="Metric"
+                    android:summary="Distance in Kilometers"/>
+            </PreferenceCategory>
+
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="User">
+
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,16 +1,37 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.dirtymop.myapplication.HudActivity"
-    android:background="@color/gravelgrey">
+    android:background="@color/gravelgrey"
+    android:gravity="center">
 
-    <TextView android:text="HUD"
+    <TextView
+        android:id="@+id/latitude"
+        android:text="latitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/lightgray"
         android:layout_gravity="center"/>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/longitude"
+        android:text="longitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lightgray"
+        android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/accuracy"
+        android:text="accuracy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lightgray"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

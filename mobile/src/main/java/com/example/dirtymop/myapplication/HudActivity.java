@@ -2,6 +2,9 @@ package com.example.dirtymop.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,6 +23,15 @@ public class HudActivity extends Activity {
     TextView latitude, longitude, accuracy, altitude;
     private int LOCATION_DISTANCE_REFRESH = 0;  // meters
     private int LOCATION_TIME_REFRESH = 500;    // milliseconds
+
+    // Location
+    String locationprovider;
+    LocationManager locationManager;
+    LocationListener locationListener;
+
+    // Sensor
+    SensorManager sensorManager;
+    Sensor gyroSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +55,27 @@ public class HudActivity extends Activity {
         // Location Services
         //
         // GPS Location Provider
-        String locationprovider = LocationManager.GPS_PROVIDER;
+        runLocation();
+
+
+        // Motion Services
+        //
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        // -----------------
+
+    }
+
+
+    // GPS location
+    public void runLocation() {
+        locationprovider = LocationManager.GPS_PROVIDER;
 
         // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         // Define a listener that responds to location updates
-        LocationListener locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 latitude.setText("Latitude: " + String.valueOf(location.getLatitude()));
@@ -77,28 +103,5 @@ public class HudActivity extends Activity {
         // Schedule to receive location updates on the set listener with the given refresh intervals.
         locationManager.requestLocationUpdates(locationprovider, LOCATION_TIME_REFRESH,
                 LOCATION_DISTANCE_REFRESH, locationListener);
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_hud, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

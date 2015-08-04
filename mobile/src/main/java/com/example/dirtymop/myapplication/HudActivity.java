@@ -55,7 +55,7 @@ public class HudActivity extends Activity {
         // Location Services
         //
         // GPS Location Provider
-        runLocation();
+        startLocationTracking();
 
 
         // Motion Services
@@ -68,7 +68,7 @@ public class HudActivity extends Activity {
 
 
     // GPS location
-    public void runLocation() {
+    public void startLocationTracking() {
         locationprovider = LocationManager.GPS_PROVIDER;
 
         // Acquire a reference to the system Location Manager

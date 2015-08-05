@@ -3,9 +3,10 @@
     package="com.example.dirtymop.myapplication" >
 
     <!-- Permissions -->
-    <uses-permission android:name="android.permission.internet"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.internet" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!-- Application -->
     <application
@@ -13,16 +14,29 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
 
-        <!-- Main Activitiy -->
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:name=".Login"
+            android:label="@string/title_activity_login" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+
+        <!-- Main Activitiy -->
+
+
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+
         </activity>
 
         <!-- Home -->
@@ -31,7 +45,7 @@
             android:label="@string/title_activity_home" >
         </activity>
 
-        <!-- Settings  -->
+        <!-- Settings -->
         <activity
             android:name=".SettingActivity"
             android:label="@string/title_activity_setting" >
@@ -48,6 +62,16 @@
             android:name=".HudActivity"
             android:label="@string/title_activity_hud" >
         </activity>
+
+        <!-- Login -->
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            />
+        </activity>
+
     </application>
 
 </manifest>

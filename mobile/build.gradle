@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    repositories
+            {
+                mavenCentral()
+            }
 }
 
 dependencies {
@@ -24,4 +28,7 @@ dependencies {
     wearApp project(':wear')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.1.0'
+
+
 }

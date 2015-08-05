@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Velo</string>
-
+    <string name="app_name">cycle</string>
+    <string name="facebook_app_id">1042538305786897</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
@@ -23,6 +23,8 @@
     <string name="title_activity_setting">SettingActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_hud">HudActivity</string>
+    <string name="title_activity_facebook_login">FacebookLoginActivity</string>
+    <string name="title_activity_login">Login</string>
 
 
 

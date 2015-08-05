@@ -5,12 +5,14 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
@@ -20,22 +22,32 @@ import com.example.dirtymop.myapplication.interfaces.MenuInteractionListener;
 
 // TODO: Need to implement the InteractionListener methods AFTER creating them in the interface files.
 public class MainActivity extends Activity {
-
+    public static final String PREFS_NAME = "firstName";
     // Fragment objects.
     private Fragment history, home, menu;
 
     // Fragment manager object.
     private FragmentManager fm;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        String name = settings.getString("firstName", "");
+        String id =settings.getString("iD","");
+
+
+                TextView welcome= (TextView) findViewById(R.id.WelcomeMessage);
+        welcome.setText("Welcome:"+name);
         // Dummy button to start home activity.
         Button g = (Button) findViewById(R.id.settingButton);
         Button b = (Button) findViewById(R.id.homeButton);
         Button h = (Button) findViewById(R.id.hudButton);
+
+
 
         g.setOnClickListener (new View.OnClickListener(){
             @Override public void onClick(View v)

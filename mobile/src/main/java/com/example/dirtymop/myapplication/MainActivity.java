@@ -33,8 +33,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         // Dummy button to start home activity.
-        Button g=(Button)findViewById(R.id.settingButton);
+        Button g = (Button) findViewById(R.id.settingButton);
         Button b = (Button) findViewById(R.id.homeButton);
+        Button h = (Button) findViewById(R.id.hudButton);
 
         g.setOnClickListener (new View.OnClickListener(){
             @Override public void onClick(View v)
@@ -50,6 +51,14 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        h.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HudActivity.class);
                 startActivity(intent);
             }
         });

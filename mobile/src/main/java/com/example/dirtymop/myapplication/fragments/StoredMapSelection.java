@@ -1,9 +1,13 @@
 package com.example.dirtymop.myapplication.fragments;
 
 
+import android.content.Context;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 //import android.app.Fragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +87,7 @@ public class StoredMapSelection extends Fragment {
         // Retun the inflated view
         return view;
     }
+
 
 
 }

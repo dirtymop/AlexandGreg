@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.dirtymop.myapplication.classes.Contact;
+import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.fragments.History;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
@@ -24,6 +27,11 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
 
     private Fragment history;
     private Button selectMapButton;
+
+    // SQLite database
+    private SQLiteDatabase db;
+    private DatabaseHelper dbHelper;
+    private static final String DB_FILENAME = "local.db";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +61,13 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
             fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY).commit();
             Toast.makeText(getApplicationContext(), "added history", Toast.LENGTH_SHORT).show();
         }
+
+        // SQLite
+        dbHelper = new DatabaseHelper(this);
+        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+        dbHelper.createTables(db);
+        dbHelper.insertContact(db, new Contact("Alex", "540-419-7390", "acd1797@vt.edu"), "derieux");
+        dbHelper.getContact(db);
     }
 
     @Override

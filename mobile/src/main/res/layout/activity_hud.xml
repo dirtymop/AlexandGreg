@@ -40,5 +40,29 @@
         android:layout_height="wrap_content"
         android:textColor="@color/lightgray"
         android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/speed"
+        android:text="speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lightgray"
+        android:layout_gravity="center"/>
+
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/mySimpleXYPlot"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        androidPlot.title=""
+        androidPlot.domainLabel="Time"
+        androidPlot.rangeLabel="Accuracy"
+        androidPlot.graphWidget.marginTop="20dp"
+        androidPlot.graphWidget.marginLeft="15dp"
+        androidPlot.graphWidget.marginBottom="25dp"
+        androidPlot.graphWidget.marginRight="10dp"
+        androidPlot.legendWidget.iconSizeMetrics.heightMetric.value="15dp"
+        androidPlot.legendWidget.iconSizeMetrics.widthMetric.value="15dp"
+        androidPlot.legendWidget.heightMetric.value="25dp"
+        androidPlot.legendWidget.positionMetrics.anchor="right_bottom"
+        androidPlot.graphWidget.gridLinePaint.color="#000000"/>
 
 </LinearLayout>

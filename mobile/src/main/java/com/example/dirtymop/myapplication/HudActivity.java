@@ -2,11 +2,13 @@ package com.example.dirtymop.myapplication;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,6 +17,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -29,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidplot.Plot;
+import com.androidplot.PlotListener;
 import com.androidplot.ui.SeriesRenderer;
 import com.androidplot.util.PlotStatistics;
 import com.androidplot.xy.BoundaryMode;
@@ -56,7 +60,7 @@ public class HudActivity
         extends Activity
         implements ServiceConnection, OnMapReadyCallback {
 
-    TextView latitude, longitude, accuracy, altitude, speed;
+    TextView latitude, longitude, accuracy, altitude, speed, acceleration;
     private int LOCATION_DISTANCE_REFRESH = 0;  // meters
     private int LOCATION_TIME_REFRESH = 500;    // milliseconds
 
@@ -76,7 +80,10 @@ public class HudActivity
 
     // Plotting
     private XYPlot plot;
-    private SimpleXYSeries altitudeSeries;
+    private SimpleXYSeries altitudeSeries, xAccelerationSeries, yAccelerationSeries, zAccelerationSeries;
+    private double xHigh = 999.0;
+    private double yHigh = 999.0;
+    private double zHigh = 999.0;
     private int HISTORY_SIZE = 30;
 
     // Android Wear
@@ -94,19 +101,29 @@ public class HudActivity
         // Set view.
         setContentView(R.layout.activity_hud);
 
+        // Create service
+        createSerice();
+
         // Initialize TextView
         latitude = (TextView) findViewById(R.id.latitude);
         longitude = (TextView) findViewById(R.id.longitude);
         accuracy = (TextView) findViewById(R.id.accuracy);
         altitude = (TextView) findViewById(R.id.altitude);
         speed = (TextView) findViewById(R.id.speed);
+        acceleration = (TextView) findViewById(R.id.acceleration);
         plot = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 
         // Plotting
-        altitudeSeries = new SimpleXYSeries("altitude");
-        plot.setDomainBoundaries(0, 10, BoundaryMode.AUTO);
-        plot.setRangeBoundaries(0, 10, BoundaryMode.AUTO);
-        plot.addSeries(altitudeSeries, new LineAndPointFormatter(Color.RED, Color.BLACK, Color.WHITE, null));
+//        altitudeSeries = new SimpleXYSeries("altitude");
+        xAccelerationSeries = new SimpleXYSeries("x-axis");
+        yAccelerationSeries = new SimpleXYSeries("y-axis");
+        zAccelerationSeries = new SimpleXYSeries("z-axis");
+        plot.setDomainBoundaries(-10, 10, BoundaryMode.AUTO);
+        plot.setRangeBoundaries(-10, 10, BoundaryMode.AUTO);
+        plot.setTitle("Acceleration Data");
+        plot.addSeries(xAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.RED, null, null));
+        plot.addSeries(yAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.WHITE, null, null));
+        plot.addSeries(zAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.BLUE, null, null));
         final PlotStatistics altiStats = new PlotStatistics(1000, false);
         plot.addListener(altiStats);
 
@@ -132,6 +149,15 @@ public class HudActivity
     protected void onResume() {
         super.onResume();
 
+        Log.d("hud", "[onResume] service is started: " + serviceIsStarted());
+//        while (!serviceIsStarted()) {
+//            Log.d("hud", "help, I have fallen!");
+//            try {
+//                Thread.sleep(500);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
         bindWithService();
     }
 
@@ -155,6 +181,8 @@ public class HudActivity
         centerMapOnLocation(new LatLng(location.getDouble("latitude"), location.getDouble("longitude")));
 
         aw.sendLatLng(new LatLng(location.getDouble("latitude"), location.getDouble("longitude")));
+
+
 //        googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getDouble("latitude"), location.getDouble("longitude"))).title(getCurrentTime()));
 
 //        // Plot altitude
@@ -163,11 +191,58 @@ public class HudActivity
 //        plot.redraw();
     }
 
+    public void updateAccelerometer(Bundle data) {
+
+        if (xHigh == 999.0 || xHigh < data.getDouble("x-axis")) xHigh = data.getDouble("x-axis");
+        if (yHigh == 999.0 || yHigh < data.getDouble("y-axis")) yHigh = data.getDouble("y-axis");
+        if (zHigh == 999.0 || zHigh < data.getDouble("z-axis")) zHigh = data.getDouble("z-axis");
+
+        if (xHigh > 29.0 || yHigh > 29.0 || zHigh > 29.0) call("5404197390");
+
+        acceleration.setText("Acceleration peaks:"
+                + "\nX: " + xHigh
+                + "\nY: " + yHigh
+                + "\nZ: " + zHigh);
+
+        Calendar c = Calendar.getInstance();
+        long now = c.getTimeInMillis();
+
+        if (xAccelerationSeries.size() > 50){
+            xAccelerationSeries.removeFirst();
+            yAccelerationSeries.removeFirst();
+            zAccelerationSeries.removeFirst();
+        }
+
+        xAccelerationSeries.addLast(now, data.getDouble("x-axis"));
+        yAccelerationSeries.addLast(now, data.getDouble("y-axis"));
+        zAccelerationSeries.addLast(now, data.getDouble("z-axis"));
+        plot.redraw();
+    }
+
+    private void call(String number) {
+        try {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            if (number.length() == 10) callIntent.setData(Uri.parse("tel:" + number));
+            else throw new NumberFormatException("Phone number must have 10 digits.");
+            startActivity(callIntent);
+        } catch (ActivityNotFoundException e) {
+            Log.e("hud", "Call failed: " + e.getMessage());
+        }
+        catch (NumberFormatException e) {
+            Log.e("hud", "Call failed: " + e.getMessage());
+        }
+    }
+
     /*
     * Service connection methods
     * */
-    public void bindWithService() {
+
+    public void createSerice() {
         if (!serviceIsStarted()) this.startService(new Intent(HudActivity.this, LocationAndSensorService.class));
+    }
+    public void bindWithService() {
+//        if (!serviceIsStarted()) this.startService(new Intent(HudActivity.this, LocationAndSensorService.class));
+//        createSerice();
         Intent intent = new Intent(HudActivity.this, LocationAndSensorService.class);
         // Bind with the service
         this.bindService(intent, this, Context.BIND_AUTO_CREATE);

@@ -50,6 +50,13 @@
         android:layout_height="wrap_content"
         android:textColor="@color/lightgray"
         android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/acceleration"
+        android:text="acceleration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lightgray"
+        android:layout_gravity="center"/>
 
     <com.androidplot.xy.XYPlot
         android:id="@+id/mySimpleXYPlot"

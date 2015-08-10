@@ -21,6 +21,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.wearable.Wearable;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class LocationAndSensorService
     private GoogleApiClient mGoogleApiClient;
     private long LOCATION_INTERVAL = 500; // milliseconds
     private Bundle locationBundle;
+    private volatile boolean isBuilt = false;
 
     /*
     * Sensor member variables
@@ -123,6 +125,14 @@ public class LocationAndSensorService
         // Create sensors.
         buildSensors();
 
+//        // ------
+//        // Connect to the GoogleApiClient
+//        mGoogleApiClient.connect();
+//
+//        // Connect sensors to sensor listeners.
+//        startSensors();
+//        // --------
+
         // START_STICKY: service will be explicitly started and stopped for arbitrary amounts of time.
         return START_STICKY;
     }
@@ -159,6 +169,8 @@ public class LocationAndSensorService
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        isBuilt = true;
     }
     /*
     * --------------------
@@ -189,6 +201,7 @@ public class LocationAndSensorService
 
     /*
     * Sensor methods
+    *
     * */
     public void buildSensors() {
         // Initialize the sensor manager.
@@ -205,36 +218,32 @@ public class LocationAndSensorService
     // Registers event listeners for each sensor.
     public void startSensors() {
         // Register listeners for each sensor
-        sensorManager.registerListener(gyroscopeSensorListener, gyroscope, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(accelerometerSensorListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, gyroscope, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
     // Unregister the sensors with the sensor manager.
     public void stopSensors() {
-        sensorManager.unregisterListener(gyroscopeSensorListener);
-        sensorManager.unregisterListener(accelerometerSensorListener);
+        sensorManager.unregisterListener(sensorEventListener);
     }
 
     // Gyroscope event listener.
-    private SensorEventListener gyroscopeSensorListener = new SensorEventListener() {
+    private SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
 //            gyroData.add(gyroData.size(), event.values[0]);
 //            Log.d("service", "length: " + gyroData.size() + "gyroscope: " + String.valueOf(event.values[0]));
-        }
 
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-        }
-    };
-
-    // Accelerometer event listener.
-    private SensorEventListener accelerometerSensorListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
 //            Log.d("service", "length: " + accelData.size() + "accelerometer: " + String.valueOf(event.values[0]));
 //            accelData.add(accelData.size(), event.values[0]);
+
+            // Determine which sensor triggered the event listener
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                processAccelerometer(event);
+            }
+            if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+
+            }
         }
 
         @Override
@@ -242,6 +251,35 @@ public class LocationAndSensorService
 
         }
     };
+
+    // Process Accelerometer
+    public void processAccelerometer(SensorEvent event) {
+        // alpha is calculated as t / (t + dT)
+        // with t, the low-pass filter's time-constant
+        // and dT, the event delivery rate
+
+        final double alpha = 0.8;
+        double[] gravity = new double[3];
+        double[] linear_acceleration = new double[3];
+
+        // Determine what contribution of gravity is.
+        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+        // Calculate true linear acceleration without gravity
+        linear_acceleration[0] = event.values[0] - gravity[0];
+        linear_acceleration[1] = event.values[1] - gravity[1];
+        linear_acceleration[2] = event.values[2] - gravity[2];
+
+        Bundle b = new Bundle();
+        b.putDouble("x-axis", linear_acceleration[0]);
+        b.putDouble("y-axis", linear_acceleration[1]);
+        b.putDouble("z-axis", linear_acceleration[2]);
+        this.activity.updateAccelerometer(b);
+
+        Log.d("accelerometer", "\n\nX: " + linear_acceleration[0] + "\nY: " + linear_acceleration[1] + "\nZ: " + linear_acceleration[2]);
+    }
     /*
     * ----------------------
     * */
@@ -257,7 +295,7 @@ public class LocationAndSensorService
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY) // Set priority
                 .setInterval(LOCATION_INTERVAL) // Set interval for location refresh, milliseconds
-                .setFastestInterval(1000); // Set fastest update interval to 1 second
+                .setFastestInterval(100); // Set fastest update interval to 1 second
 
         // Run the request for updates.
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);

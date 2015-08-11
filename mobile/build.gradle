@@ -37,4 +37,5 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.+'
 
 
+    compile 'com.google.android.gms:play-services-maps:7.5.0'
 }

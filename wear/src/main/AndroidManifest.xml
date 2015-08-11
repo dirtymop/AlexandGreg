@@ -4,11 +4,32 @@
 
     <uses-feature android:name="android.hardware.type.watch" />
 
+    <!-- Google Maps API used OpenGL ES -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.DeviceDefault" >
+
+        <!-- Android Wear API -->
+        <uses-library
+            android:name="com.google.android.wearable"
+            android:required="false" />
+
+        <!-- Google Maps API key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyALvkv7DUUnJyd7NKCtj6tmhyWfpfNIND4" />
+
+        <!-- Google Play services version number-->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity
             android:name=".MainWearActivity"
             android:label="@string/app_name" >
@@ -17,6 +38,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".HudWearActivity"
+            android:label="@string/title_activity_hud_wear" >
         </activity>
     </application>
 

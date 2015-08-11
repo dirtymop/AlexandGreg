@@ -219,8 +219,8 @@ public class LocationAndSensorService
     private SensorEventListener gyroscopeSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            gyroData.add(gyroData.size(), event.values[0]);
-            Log.d("service", "length: " + gyroData.size() + "gyroscope: " + String.valueOf(event.values[0]));
+//            gyroData.add(gyroData.size(), event.values[0]);
+//            Log.d("service", "length: " + gyroData.size() + "gyroscope: " + String.valueOf(event.values[0]));
         }
 
         @Override
@@ -233,8 +233,8 @@ public class LocationAndSensorService
     private SensorEventListener accelerometerSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            Log.d("service", "length: " + accelData.size() + "accelerometer: " + String.valueOf(event.values[0]));
-            accelData.add(accelData.size(), event.values[0]);
+//            Log.d("service", "length: " + accelData.size() + "accelerometer: " + String.valueOf(event.values[0]));
+//            accelData.add(accelData.size(), event.values[0]);
         }
 
         @Override

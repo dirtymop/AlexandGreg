@@ -10,18 +10,19 @@ import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.classes.HistoryEntry;
+import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.History;
 
 import java.util.ArrayList;
 
 
-public class HistoryEntryAdapter extends ArrayAdapter<HistoryEntry> implements View.OnClickListener {
+public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements View.OnClickListener {
 
     private final Context context;
-    private final ArrayList<HistoryEntry> entries;
+    private final ArrayList<HistoryTable> entries;
 
     // Constructor
-    public HistoryEntryAdapter(Context context, ArrayList<HistoryEntry> entries) {
+    public HistoryEntryAdapter(Context context, ArrayList<HistoryTable> entries) {
         super(context, R.layout.history_entry_layout, entries);
 
         // Initialize object attributes
@@ -31,7 +32,8 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryEntry> implements V
 
     @Override
     public void onClick(View v) {
-
+        // Open up history view layout
+        // Show details on specific entry
     }
 
     @Override

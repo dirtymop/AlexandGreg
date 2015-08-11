@@ -94,12 +94,13 @@ public class History extends Fragment {
 
 
 
-        // Dummy entries
-        ArrayList<HistoryEntry> temp = new ArrayList<HistoryEntry>();
-        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
-        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
-        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
-        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
+//        // Dummy entries
+//        ArrayList<HistoryEntry> temp = new ArrayList<HistoryEntry>();
+        ArrayList<HistoryTable> temp = new ArrayList<HistoryTable>();
+//        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
+//        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
+//        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
+//        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
 
         // Initialize adapter
         adapter = new HistoryEntryAdapter(getActivity().getApplicationContext(), temp);
@@ -109,6 +110,11 @@ public class History extends Fragment {
 
         // Return the view.
         return view;
+    }
+
+    public void addHistoryEntry(HistoryTable entry) {
+        adapter.add(entry);
+        adapter.notifyDataSetChanged();
     }
 
     @Override

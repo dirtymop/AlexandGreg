@@ -27,7 +27,7 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
 
     private FragmentManager fm;
 
-    private Fragment history;
+    private History history;
     private Button selectMapButton;
 
     // SQLite database
@@ -44,7 +44,6 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
         dbHelper.createTables(db);
-//        dbHelper.insertContact(db, new Contact("Alex", "540-419-7390", "acd1797@vt.edu"), "derieux");
         dbHelper.insertHistoryEntry(db, new HistoryTable(
                 "1111",
                 "1111",
@@ -63,17 +62,12 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
                 "2222",
                 "2222"
         ));
-//        dbHelper.getContact(db);
-        for (HistoryTable table : dbHelper.getHistoryEntry(db)) {
-            Log.d("home", "[entry]: " + table.getFacebookID());
-        }
-//        dbHelper.getHistoryEntry(db);
 
         // Initialize the fragment manager.
         fm = getFragmentManager();
 
         // Initialize home screen fragments.
-        history = fm.findFragmentByTag(TAG_FRAG_HISTORY);
+        history = (History) fm.findFragmentByTag(TAG_FRAG_HISTORY);
 
         // Initialize start button
         selectMapButton = (Button) findViewById(R.id.goToSelectMap);
@@ -91,6 +85,12 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
             history = History.newInstance("a","z");
             fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY).commit();
             Toast.makeText(getApplicationContext(), "added history", Toast.LENGTH_SHORT).show();
+        }
+
+        // Add database entries to the history fragment adapter
+        for (HistoryTable entry : dbHelper.getHistoryEntry(db)) {
+            Log.d("home", "[entry]: " + entry.getFacebookID());
+//            history.addHistoryEntry(entry);
         }
     }
 

@@ -3,9 +3,11 @@ package com.example.dirtymop.myapplication;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -104,6 +106,15 @@ public class HudActivity
     private DatabaseHelper dbHelper;
     private static final String DB_FILENAME = "local.db";
 
+    private BroadcastReceiver activityReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("hud","received broadcast from service!");
+            bindWithService();
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +128,8 @@ public class HudActivity
         setContentView(R.layout.activity_hud);
 
         // Create service
+        IntentFilter intentFilter = new IntentFilter("toActivity");
+        registerReceiver(activityReceiver, intentFilter);
         createSerice();
 
         // Initialize TextView
@@ -177,7 +190,7 @@ public class HudActivity
 //                e.printStackTrace();
 //            }
 //        }
-        bindWithService();
+        if (serviceIsStarted()) bindWithService();
     }
 
     @Override
@@ -226,7 +239,9 @@ public class HudActivity
     }
 
     public boolean isOverThreshold(double[] mobile, double[] wear) {
-        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0) && (wear[0] > 29.0 || wear[1] > 29.0 || wear[2] > 29.0))
+//        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0) && (wear[0] > 29.0 || wear[1] > 29.0 || wear[2] > 29.0))
+//            return true;
+        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0))
             return true;
         else return false;
     }
@@ -256,8 +271,10 @@ public class HudActivity
         if (zHigh == 999.0 || zHigh < data.getDouble("z-axis")) zHigh = zCurrent;
 
         // Threshold
-        if (isOverThreshold(new double[] {xMobile, yMobile, zMobile}, new double[] {xWear, yWear, zWear}))
-            Toast.makeText(this, "EMERGENCY: calling, 5404197390", Toast.LENGTH_SHORT).show(); // call("5404197390");
+        if (isOverThreshold(new double[] {xMobile, yMobile, zMobile}, new double[] {xWear, yWear, zWear})) {
+            Toast.makeText(this, "EMERGENCY: calling, 5404197390", Toast.LENGTH_SHORT).show();
+            call("5404197390");
+        }
 
         // Set textview text.
         acceleration.setText("Acceleration peaks:"
@@ -307,9 +324,8 @@ public class HudActivity
     public void createSerice() {
         if (!serviceIsStarted()) this.startService(new Intent(HudActivity.this, LocationAndSensorService.class));
     }
+
     public void bindWithService() {
-//        if (!serviceIsStarted()) this.startService(new Intent(HudActivity.this, LocationAndSensorService.class));
-//        createSerice();
         Intent intent = new Intent(HudActivity.this, LocationAndSensorService.class);
         // Bind with the service
         this.bindService(intent, this, Context.BIND_AUTO_CREATE);
@@ -434,7 +450,8 @@ public class HudActivity
     // Method for tidying up onDestroy.
     public void cleanup() {
         mapFragment.onDestroy();
-        service.onDestroy();
+        stopService(new Intent(HudActivity.this, LocationAndSensorService.class));
+//        service.onDestroy();
     }
 
 

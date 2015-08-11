@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -239,10 +240,10 @@ public class HudActivity
     }
 
     public boolean isOverThreshold(double[] mobile, double[] wear) {
-//        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0) && (wear[0] > 29.0 || wear[1] > 29.0 || wear[2] > 29.0))
-//            return true;
-        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0))
+        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0) && (wear[0] > 29.0 || wear[1] > 29.0 || wear[2] > 29.0))
             return true;
+//        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0))
+//            return true;
         else return false;
     }
 
@@ -304,7 +305,14 @@ public class HudActivity
     // Handles all methods pertaining to emergency response.
     private void handleEmergency() {
         Toast.makeText(this, "EMERGENCY: calling, 5404197390", Toast.LENGTH_SHORT).show();
-        call("5404197390");
+
+        // Ensure user can make phone calls.
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
+            call("5404197390");
+        }
+        else {
+            Toast.makeText(this, "calling not supported on this device.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Call a designated phone number.
@@ -354,6 +362,8 @@ public class HudActivity
 
         // Assign the activity to send callbacks to.
         this.service.sendCallbacks(this);
+
+        Log.d("hud", "service is connected & callbacks are set!");
     }
 
     @Override

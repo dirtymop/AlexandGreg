@@ -64,6 +64,12 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home" >
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
         </activity>
 
         <!-- Settings -->
@@ -82,12 +88,6 @@
         <activity
             android:name=".HudActivity"
             android:label="@string/title_activity_hud" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
         </activity>
 
         <!-- Login -->

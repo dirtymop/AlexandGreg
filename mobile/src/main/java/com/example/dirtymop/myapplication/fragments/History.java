@@ -127,36 +127,4 @@ public class History extends Fragment {
         super.onDetach();
         listener = null;
     }
-
-
-    private class Loadahistoryentry extends AsyncTask<Integer, Integer, Integer>
-    {   private Handler passentryout;
-        private Context context;
-        public Loadahistoryentry(Context context, Handler passentryout) {
-
-            super();
-            this.passentryout=passentryout;
-            this.context = context;
-        }
-
-        @Override
-        protected Integer doInBackground(Integer... params) {
-
-            Bundle b = new Bundle();
-            Message m = new Message();
-
-            // put data into the bundle
-            // netx
-            // put the  bundle into the mesage
-
-            passentryout.sendMessage(m);
-
-            return null;
-        }
-    }
-
-
-
-
-
 }

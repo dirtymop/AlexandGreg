@@ -53,12 +53,24 @@ public class DatabaseHelper {
     private static final String CREATE_TABLE_CONTACTS = "CREATE TABLE IF NOT EXISTS "
             + TABLE_CONTACTS
             + " ( "
-            + KEY_ID + " INTEGER PRIMARY KEY, "
+            + KEY_ID + " TEXT PRIMARY KEY, "
             + KEY_USER + " TEXT NOT NULL, "
             + KEY_CONTACTS_NAME + " TEXT NOT NULL, "
             + KEY_CONTACTS_NUMBER + " TEXT NOT NULL, "
             + KEY_CONTACTS_EMAIL + " TEXT NOT NULL, "
             + "UNIQUE(" + KEY_CONTACTS_NAME + ")"
+            + ");";
+
+    private static final String CREATE_TABLE_HISTORY = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_HISTORY
+            + " ( "
+            + KEY_ID + " TEXT PRIMARY KEY, "
+            + KEY_USER + " TEXT NOT NULL, "
+            + KEY_HISTORY_Avgspeed + " TEXT NOT NULL, "
+            + KEY_HISTORY_Elevation + " TEXT NOT NULL, "
+            + KEY_HISTORY_Date + " TEXT NOT NULL, "
+            + KEY_HISTORY_TIME + " TEXT NOT NULL, "
+            + KEY_HISTORY_latsandlong + " TEXT NOT NULL"
             + ");";
 
     // Constructor
@@ -77,13 +89,18 @@ public class DatabaseHelper {
     public void createTables(SQLiteDatabase db) {
         try {
             db.execSQL(CREATE_TABLE_CONTACTS);
+            db.execSQL(CREATE_TABLE_HISTORY);
         } catch (SQLException e) {
             Log.d("db","[exception] tables were not created: " + e.getMessage());
         }
     }
 
-    /* DB insertion methods */
-    public void insertContact(SQLiteDatabase db, Contact contact, String user) {
+    /*
+    * LOCAL DB: Insertion methods
+    *
+    * */
+    public void insertContact(SQLiteDatabase db, Contact contact, String user)
+    {
         try {
             // Query to insert a new contact to the database.
             String insertQuery = "INSERT INTO "
@@ -107,7 +124,6 @@ public class DatabaseHelper {
             Log.d("db", "[exception] insert contact failed: " + e.getMessage());
         }
     }
-
     public void insertHistoryEntry(SQLiteDatabase db, HistoryTable x)
     {// KEY_ID, KEY_USER, KEY_HISTORY_Avgspeed, KEY_HISTORY_Elevation, KEY_HISTORY_latsandlong
         try {
@@ -119,13 +135,14 @@ public class DatabaseHelper {
                     + KEY_USER + ","
                     + KEY_HISTORY_Avgspeed + ","
                     + KEY_HISTORY_Elevation + ","
-                    +KEY_HISTORY_Date + ","
-                    +KEY_HISTORY_TIME + ","
+                    + KEY_HISTORY_Date + ","
+                    + KEY_HISTORY_TIME + ","
                     + KEY_HISTORY_latsandlong
                     + " )"
                     + " Values ( '" + x.getFacebookID() + "', '"
                     + x.getCustomerName() + "', '"
                     + x.getAvgspeed() + "', '"
+                    + x.getElevation() + "', '"
                     + x.getDate() +"', '"
                     + x.getTime() +"', '"
                     + x.getLatsandlong()
@@ -143,8 +160,12 @@ public class DatabaseHelper {
 
 
     }
-    public boolean saveContactsTable ()
-    {return true;}
+
+    public boolean saveContactsTable () {return true;}
+
+    /*
+    * LOCAL DB: Getter methods
+    * */
     public ContactsTable getContact(SQLiteDatabase db) {
         ContactsTable entry = new ContactsTable();
         String[] columns = { KEY_ID, KEY_USER,KEY_CONTACTS_NAME, KEY_CONTACTS_NUMBER, KEY_CONTACTS_EMAIL};
@@ -185,6 +206,9 @@ public class DatabaseHelper {
 
         String[] columns = { KEY_ID, KEY_USER, KEY_HISTORY_Avgspeed,KEY_HISTORY_Date,KEY_HISTORY_TIME, KEY_HISTORY_Elevation, KEY_HISTORY_latsandlong};
         Cursor c = db.query(TABLE_HISTORY, columns, null, null, null, null, null);
+
+        Log.d("db", "cursor count: " + c.getCount());
+
         while(!c.isLast()) {
             c.moveToNext();
             HistoryTable entry = new HistoryTable();
@@ -213,7 +237,8 @@ public class DatabaseHelper {
 
 
     }
-    private class Saveahistoryentry extends AsyncTask<HistoryTable, Integer, Integer> {
+    private class Saveahistoryentry extends AsyncTask<HistoryTable, Integer, Integer>
+    {
         private Context context;
         public Saveahistoryentry(Context context) {
             super();

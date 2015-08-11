@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.classes.Contact;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
+import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.History;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
@@ -37,6 +39,35 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // SQLite
+        dbHelper = new DatabaseHelper(this);
+        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+        dbHelper.createTables(db);
+//        dbHelper.insertContact(db, new Contact("Alex", "540-419-7390", "acd1797@vt.edu"), "derieux");
+        dbHelper.insertHistoryEntry(db, new HistoryTable(
+                "1111",
+                "1111",
+                "1111",
+                "1111",
+                "1111",
+                "1111",
+                "1111"
+        ));
+        dbHelper.insertHistoryEntry(db, new HistoryTable(
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222"
+        ));
+//        dbHelper.getContact(db);
+        for (HistoryTable table : dbHelper.getHistoryEntry(db)) {
+            Log.d("home", "[entry]: " + table.getFacebookID());
+        }
+//        dbHelper.getHistoryEntry(db);
 
         // Initialize the fragment manager.
         fm = getFragmentManager();
@@ -61,13 +92,6 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
             fm.beginTransaction().replace(R.id.homeBottom, history, TAG_FRAG_HISTORY).commit();
             Toast.makeText(getApplicationContext(), "added history", Toast.LENGTH_SHORT).show();
         }
-
-        // SQLite
-        dbHelper = new DatabaseHelper(this);
-        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
-        dbHelper.createTables(db);
-        dbHelper.insertContact(db, new Contact("Alex", "540-419-7390", "acd1797@vt.edu"), "derieux");
-        dbHelper.getContact(db);
     }
 
     @Override

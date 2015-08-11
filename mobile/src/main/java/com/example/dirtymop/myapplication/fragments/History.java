@@ -1,20 +1,33 @@
 package com.example.dirtymop.myapplication.fragments;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.classes.HistoryEntry;
 import com.example.dirtymop.myapplication.adapters.HistoryEntryAdapter;
+import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
 import java.util.ArrayList;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class History extends Fragment {
@@ -35,6 +48,7 @@ public class History extends Fragment {
 
     // XML elements
     private ListView entries;
+
 
 
     // Creates new instance of constructor
@@ -73,6 +87,13 @@ public class History extends Fragment {
         entries.setDivider(null);
         entries.setDividerHeight(0);
 
+
+
+
+
+
+
+
         // Dummy entries
         ArrayList<HistoryEntry> temp = new ArrayList<HistoryEntry>();
         temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
@@ -82,6 +103,7 @@ public class History extends Fragment {
 
         // Initialize adapter
         adapter = new HistoryEntryAdapter(getActivity().getApplicationContext(), temp);
+//        adapter = new HistoryEntryAdapter(getActivity().getApplicationContext(), null);
 
         entries.setAdapter(adapter);
 
@@ -105,5 +127,36 @@ public class History extends Fragment {
         super.onDetach();
         listener = null;
     }
+
+
+    private class Loadahistoryentry extends AsyncTask<Integer, Integer, Integer>
+    {   private Handler passentryout;
+        private Context context;
+        public Loadahistoryentry(Context context, Handler passentryout) {
+
+            super();
+            this.passentryout=passentryout;
+            this.context = context;
+        }
+
+        @Override
+        protected Integer doInBackground(Integer... params) {
+
+            Bundle b = new Bundle();
+            Message m = new Message();
+
+            // put data into the bundle
+            // netx
+            // put the  bundle into the mesage
+
+            passentryout.sendMessage(m);
+
+            return null;
+        }
+    }
+
+
+
+
 
 }

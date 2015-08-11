@@ -56,12 +56,14 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
+
         </activity>
 
         <!-- Home -->
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_activity_home" >
+
         </activity>
 
         <!-- Settings -->
@@ -85,6 +87,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <!-- Login -->

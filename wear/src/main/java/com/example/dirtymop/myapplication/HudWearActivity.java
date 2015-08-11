@@ -286,6 +286,7 @@ public class HudWearActivity
             PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
             PendingResult<DataApi.DataItemResult> pendingResult =
                     Wearable.DataApi.putDataItem(googleApiClient, putDataReq);
+//            Wearable.MessageApi.sendMessage(googleApiClient)
 
             return null;
         }

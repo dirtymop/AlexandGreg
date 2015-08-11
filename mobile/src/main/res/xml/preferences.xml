@@ -11,7 +11,7 @@
     <PreferenceCategory android:title="Watch">
         <PreferenceScreen >
             <PreferenceCategory android:title="Units">
-                <CheckBoxPreference android:key="checkbox_preference"
+                <CheckBoxPreference android:key="checkbox_Units"
                     android:title="Imperial"
                     android:summary="Distance in Miles" />
                 <CheckBoxPreference

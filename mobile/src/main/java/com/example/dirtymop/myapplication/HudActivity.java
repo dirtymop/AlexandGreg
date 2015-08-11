@@ -272,8 +272,7 @@ public class HudActivity
 
         // Threshold
         if (isOverThreshold(new double[] {xMobile, yMobile, zMobile}, new double[] {xWear, yWear, zWear})) {
-            Toast.makeText(this, "EMERGENCY: calling, 5404197390", Toast.LENGTH_SHORT).show();
-            call("5404197390");
+            handleEmergency();
         }
 
         // Set textview text.
@@ -300,6 +299,12 @@ public class HudActivity
 
         // Redraw the plot with the new data.
         plot.redraw();
+    }
+
+    // Handles all methods pertaining to emergency response.
+    private void handleEmergency() {
+        Toast.makeText(this, "EMERGENCY: calling, 5404197390", Toast.LENGTH_SHORT).show();
+        call("5404197390");
     }
 
     // Call a designated phone number.

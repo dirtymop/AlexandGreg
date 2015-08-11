@@ -202,7 +202,17 @@ public class DatabaseHelper {
         return completehistory;
     }
 
+    public void Savetothecloud(ArrayList<HistoryTable> ht,ContactsTable ct, PreferencesTable pt)
+    {
 
+        while(!ht.isEmpty()) {
+            new Saveahistoryentry(this.context).execute(ht.remove(0));
+        }
+        new SaveaContactsentry(this.context).execute(ct);
+        new SaveaPerferencesentry(this.context).execute(pt);
+
+
+    }
     private class Saveahistoryentry extends AsyncTask<HistoryTable, Integer, Integer> {
         private Context context;
         public Saveahistoryentry(Context context) {

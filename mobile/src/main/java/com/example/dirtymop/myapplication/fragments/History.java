@@ -49,17 +49,6 @@ public class History extends Fragment {
     // XML elements
     private ListView entries;
 
-    //handler
-    Handler passentryout=new Handler()
-    {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-
-
-
-        }
-    };
 
 
     // Creates new instance of constructor
@@ -99,7 +88,7 @@ public class History extends Fragment {
         entries.setDividerHeight(0);
 
 
-    
+
 
 
 

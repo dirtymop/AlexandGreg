@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -42,6 +43,7 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeriesFormatter;
 import com.example.dirtymop.myapplication.classes.AndroidWear;
+import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.services.LocationAndSensorService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,6 +57,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HudActivity
         extends Activity
@@ -72,6 +76,8 @@ public class HudActivity
     // Google Maps
     GoogleMap googleMap;
     LatLng lastLatLng = null;
+    HashMap<String, String> route;
+    int routeIndex;
 
     // Service member variables
     LocationAndSensorService service;
@@ -81,13 +87,22 @@ public class HudActivity
     // Plotting
     private XYPlot plot;
     private SimpleXYSeries altitudeSeries, xAccelerationSeries, yAccelerationSeries, zAccelerationSeries;
+
+    // Sensor Algorythm variables
     private double xHigh = 999.0;
     private double yHigh = 999.0;
     private double zHigh = 999.0;
-    private int HISTORY_SIZE = 30;
+    private double xCurrent, yCurrent, zCurrent;
+    private double xMobile, yMobile, zMobile;
+    private double xWear, yWear, zWear;
 
     // Android Wear
     AndroidWear aw;
+
+    // SQLite database
+    private SQLiteDatabase db;
+    private DatabaseHelper dbHelper;
+    private static final String DB_FILENAME = "local.db";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +151,10 @@ public class HudActivity
 
         // Initialize Android Wear
         aw = new AndroidWear(this);
+
+        // Create new hashmap for route
+        route = new HashMap<String, String>();
+        routeIndex = 0;
     }
 
     @Override
@@ -165,11 +184,18 @@ public class HudActivity
     protected void onDestroy() {
         super.onDestroy();
 
+        // Send route data to the local database.
+        saveRouteToLocalDB(route);
+
         // Destroy all the things...
         cleanup();
     }
 
     public void updateLocation(Bundle location) {
+
+        // Set as current location
+        LatLng current = new LatLng(location.getDouble("latitude"), location.getDouble("longitude"));
+
         latitude.setText("lat: " + Double.toString(location.getDouble("latitude")));
         longitude.setText("lon: " + Double.toString(location.getDouble("longitude")));
         altitude.setText("alt: " + Double.toString(location.getDouble("altitude")));
@@ -177,48 +203,89 @@ public class HudActivity
         speed.setText("speed: " + Float.toString(location.getFloat("speed")));
 
         // Add lat/lng to Google Maps
-        updatePrimaryPath(new LatLng(location.getDouble("latitude"), location.getDouble("longitude")));
-        centerMapOnLocation(new LatLng(location.getDouble("latitude"), location.getDouble("longitude")));
+        updatePrimaryPath(current);
+        centerMapOnLocation(current);
 
-        aw.sendLatLng(new LatLng(location.getDouble("latitude"), location.getDouble("longitude")));
+        // Place a marker @ the starting location
+        if (routeIndex == 0) {
+            googleMap.addMarker(
+                    new MarkerOptions()
+                            .position(current)
+                            .title("Start: " + getCurrentTime()));
+        }
 
+        // Save latitude and longitude to the map
+        String locationString = Double.toString(current.latitude)
+                        + ","
+                        + Double.toString(current.longitude);
+        route.put(Integer.toString(routeIndex), locationString);
+        routeIndex++; // Increment the route index.
 
-//        googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getDouble("latitude"), location.getDouble("longitude"))).title(getCurrentTime()));
-
-//        // Plot altitude
-//        if (altitudeSeries.size() > HISTORY_SIZE) altitudeSeries.removeFirst();
-//        altitudeSeries.addLast(10, location.getDouble("accuracy"));
-//        plot.redraw();
+        // Send Lat/Lng to AW.
+        aw.sendLatLng(current);
     }
 
-    public void updateAccelerometer(Bundle data) {
+    public boolean isOverThreshold(double[] mobile, double[] wear) {
+        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0) && (wear[0] > 29.0 || wear[1] > 29.0 || wear[2] > 29.0))
+            return true;
+        else return false;
+    }
 
-        if (xHigh == 999.0 || xHigh < data.getDouble("x-axis")) xHigh = data.getDouble("x-axis");
-        if (yHigh == 999.0 || yHigh < data.getDouble("y-axis")) yHigh = data.getDouble("y-axis");
-        if (zHigh == 999.0 || zHigh < data.getDouble("z-axis")) zHigh = data.getDouble("z-axis");
+    public void updateAccelerometer(String type, Bundle data) {
 
-        if (xHigh > 29.0 || yHigh > 29.0 || zHigh > 29.0) call("5404197390");
+        // Set the current values
+        xCurrent = data.getDouble("x-axis");
+        yCurrent = data.getDouble("y-axis");
+        zCurrent = data.getDouble("z-axis");
 
+        // Set variables depending on which type was called
+        if (type.equals("mobile")) {
+            xMobile = xCurrent;
+            yMobile = yCurrent;
+            zMobile = zCurrent;
+        }
+        if (type.equals("wear")) {
+            xWear = xCurrent;
+            yWear = yCurrent;
+            zWear = zCurrent;
+        }
+
+        // Get peak values.
+        if (xHigh == 999.0 || xHigh < data.getDouble("x-axis")) xHigh = xCurrent;
+        if (yHigh == 999.0 || yHigh < data.getDouble("y-axis")) yHigh = yCurrent;
+        if (zHigh == 999.0 || zHigh < data.getDouble("z-axis")) zHigh = zCurrent;
+
+        // Threshold
+        if (isOverThreshold(new double[] {xMobile, yMobile, zMobile}, new double[] {xWear, yWear, zWear}))
+            Toast.makeText(this, "EMERGENCY: calling, 5404197390", Toast.LENGTH_SHORT).show(); // call("5404197390");
+
+        // Set textview text.
         acceleration.setText("Acceleration peaks:"
                 + "\nX: " + xHigh
                 + "\nY: " + yHigh
                 + "\nZ: " + zHigh);
 
+        // Time for domain plot
         Calendar c = Calendar.getInstance();
         long now = c.getTimeInMillis();
 
+        // Only plot 50 entries at a time.
         if (xAccelerationSeries.size() > 50){
             xAccelerationSeries.removeFirst();
             yAccelerationSeries.removeFirst();
             zAccelerationSeries.removeFirst();
         }
 
+        // Add entry to each data series.
         xAccelerationSeries.addLast(now, data.getDouble("x-axis"));
         yAccelerationSeries.addLast(now, data.getDouble("y-axis"));
         zAccelerationSeries.addLast(now, data.getDouble("z-axis"));
+
+        // Redraw the plot with the new data.
         plot.redraw();
     }
 
+    // Call a designated phone number.
     private void call(String number) {
         try {
             Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -235,8 +302,8 @@ public class HudActivity
 
     /*
     * Service connection methods
+    *
     * */
-
     public void createSerice() {
         if (!serviceIsStarted()) this.startService(new Intent(HudActivity.this, LocationAndSensorService.class));
     }
@@ -278,6 +345,7 @@ public class HudActivity
 
     /*
     * Google Maps
+    *
     * */
     // Initialize the Google Maps fragment.
     public void initMap() {
@@ -337,6 +405,19 @@ public class HudActivity
     /*
     * -------------------------
     * */
+
+    // Save route to local database
+    public void saveRouteToLocalDB(HashMap<String, String> data) {
+        // Instance of database helper class
+        dbHelper = new DatabaseHelper(this);
+        // Instance of local SQLite database
+        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+
+        // TODO: put data into local DB here
+        //
+        // db.insertRoute(...)
+        Log.d("hud", "saving route..." + "\nlocal DB: " + DB_FILENAME + "\ncontents: " + data.toString());
+    }
 
     // Gets the current time and date in a formatted string.
     public String getCurrentTime() {

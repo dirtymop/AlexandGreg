@@ -2,6 +2,11 @@ package com.example.dirtymop.myapplication;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,12 +17,14 @@ import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.wearable.DataApi;
@@ -26,9 +33,12 @@ import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.DataInput;
+import java.util.ArrayList;
 
 public class HudWearActivity
         extends Activity
@@ -37,7 +47,8 @@ public class HudWearActivity
         GoogleApiClient.OnConnectionFailedListener,
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
-        GoogleMap.OnMapLongClickListener {
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnCameraChangeListener {
 
     // Member variables
     private DismissOverlayView mDismissOverlay;
@@ -46,6 +57,13 @@ public class HudWearActivity
     private FragmentManager fm;
     private static final String TAG_FRAG_MAP = "map_fragment";
     private GoogleApiClient googleApiClient;
+
+    /*
+    * Sensor member variables
+    * */
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private ArrayList<Float> accelData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +104,11 @@ public class HudWearActivity
         }
         if (!googleApiClient.isConnected()) googleApiClient.connect();
 
+        // Set up sensors
+        buildSensors();
+        // Assign listeners to sensors
+        startSensors();
+
     }
 
 
@@ -105,7 +128,7 @@ public class HudWearActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        Log.d("aw", "map is ready!");
+        Log.d("hudwear", "map is ready!");
 
         this.googleMap = googleMap;
 
@@ -113,9 +136,17 @@ public class HudWearActivity
         this.googleMap.setMyLocationEnabled(true);
     }
 
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        // implement onCameraChange event.
+        //
+        // cameraPosition.target.latitude
+        // cameraPosition.target.longitude
+    }
+
     private void centerMapOnLocation(LatLng loc) {
 
-        Log.d("aw", "centering map on location...");
+        Log.d("hudwear", "centering map on location...");
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 10), 1000, null);
     }
 
@@ -167,7 +198,7 @@ public class HudWearActivity
                     m.setData(b);
                     handler.handleMessage(m);
 
-                    Log.d("aw", "new data, sending message to handler");
+                    Log.d("hudwear", "new data, sending message to handler");
                 }
 
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
@@ -182,15 +213,83 @@ public class HudWearActivity
 
             LatLng current = new LatLng(msg.getData().getDouble("latitude"), msg.getData().getDouble("longitude"));
 
-            Log.d("aw", "handling message");
-            Log.d("aw", "lat: " + current.latitude);
-            Log.d("aw", "lng: " + current.longitude);
+            Log.d("hudwear", "handling message");
+            Log.d("hudwear", "lat: " + current.latitude);
+            Log.d("hudwear", "lng: " + current.longitude);
 
             // Handle the message
             centerMapOnLocation(current);
             markerOnLocation(current);
         }
     };
+
+    /*
+    * Sensor methods
+    *
+    * */
+    public void buildSensors() {
+        // Initialize the sensor manager.
+        sensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+
+        // Initialize sensors.
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        // Set up array list to store data
+        accelData = new ArrayList<Float>();
+    }
+
+    // Registers event listeners for each sensor.
+    public void startSensors() {
+        // Register listeners for each sensor
+        sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    // Gyroscope event listener.
+    private SensorEventListener sensorEventListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            // Determine which sensor triggered the event listener
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                // Send data to phone
+                Log.d("hudwear", "send accel data to mobile..."
+                        + "\nx-axis: " + event.values[0]
+                        + "\ny-axis: " + event.values[1]
+                        + "\nz-axis: " + event.values[2]
+                );
+                new DataTask().execute(new Float[] {event.values[0], event.values[1], event.values[2]});
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
+
+    /*
+    * Send Data Async Task
+    *
+    * */
+    public class DataTask extends AsyncTask<Float, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Float... params) {
+
+            PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/accellist");
+
+            Log.d("hudwear", "params.length: " + params.length);
+            putDataMapReq.getDataMap().putFloat("x-axis", params[0]);
+            putDataMapReq.getDataMap().putFloat("y-axis", params[1]);
+            putDataMapReq.getDataMap().putFloat("z-axis", params[2]);
+
+            PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+            PendingResult<DataApi.DataItemResult> pendingResult =
+                    Wearable.DataApi.putDataItem(googleApiClient, putDataReq);
+
+            return null;
+        }
+    }
 
 
 }

@@ -11,7 +11,9 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -21,6 +23,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 
 import java.lang.reflect.Array;
@@ -28,7 +37,9 @@ import java.util.ArrayList;
 
 public class LocationAndSensorService
         extends Service
-        implements LocationListener, GoogleApiClient.ConnectionCallbacks,
+        implements LocationListener,
+        DataApi.DataListener,
+        GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     /*
@@ -54,6 +65,7 @@ public class LocationAndSensorService
     private Sensor accelerometer;
     private ArrayList<Float> gyroData;
     private ArrayList<Float> accelData;
+
 
     /*
     * Binder class
@@ -125,14 +137,6 @@ public class LocationAndSensorService
         // Create sensors.
         buildSensors();
 
-//        // ------
-//        // Connect to the GoogleApiClient
-//        mGoogleApiClient.connect();
-//
-//        // Connect sensors to sensor listeners.
-//        startSensors();
-//        // --------
-
         // START_STICKY: service will be explicitly started and stopped for arbitrary amounts of time.
         return START_STICKY;
     }
@@ -168,6 +172,7 @@ public class LocationAndSensorService
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
+                .addApi(Wearable.API)
                 .build();
 
         isBuilt = true;
@@ -239,7 +244,7 @@ public class LocationAndSensorService
 
             // Determine which sensor triggered the event listener
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                processAccelerometer(event);
+                processAccelerometer("mobile", new float[] {event.values[0], event.values[1], event.values[2]});
             }
             if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
 
@@ -253,30 +258,35 @@ public class LocationAndSensorService
     };
 
     // Process Accelerometer
-    public void processAccelerometer(SensorEvent event) {
+    public void processAccelerometer(String type, float[] values) {
         // alpha is calculated as t / (t + dT)
         // with t, the low-pass filter's time-constant
         // and dT, the event delivery rate
+
+        Log.d("accelerometer", "data cam from: " + type);
 
         final double alpha = 0.8;
         double[] gravity = new double[3];
         double[] linear_acceleration = new double[3];
 
         // Determine what contribution of gravity is.
-        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+        gravity[0] = alpha * gravity[0] + (1 - alpha) * values[0];
+        gravity[1] = alpha * gravity[1] + (1 - alpha) * values[1];
+        gravity[2] = alpha * gravity[2] + (1 - alpha) * values[2];
 
         // Calculate true linear acceleration without gravity
-        linear_acceleration[0] = event.values[0] - gravity[0];
-        linear_acceleration[1] = event.values[1] - gravity[1];
-        linear_acceleration[2] = event.values[2] - gravity[2];
+        linear_acceleration[0] = values[0] - gravity[0];
+        linear_acceleration[1] = values[1] - gravity[1];
+        linear_acceleration[2] = values[2] - gravity[2];
 
+
+        // Push the data to the activity as a bundle.
         Bundle b = new Bundle();
         b.putDouble("x-axis", linear_acceleration[0]);
         b.putDouble("y-axis", linear_acceleration[1]);
         b.putDouble("z-axis", linear_acceleration[2]);
-        this.activity.updateAccelerometer(b);
+
+        this.activity.updateAccelerometer(type, b);
 
         Log.d("accelerometer", "\n\nX: " + linear_acceleration[0] + "\nY: " + linear_acceleration[1] + "\nZ: " + linear_acceleration[2]);
     }
@@ -320,6 +330,51 @@ public class LocationAndSensorService
     /*
     * --------------------
     * */
+
+
+    /*
+    * Data API Listener methods
+    *
+    * Runs in a background thread.
+    * */
+    @Override
+    public void onDataChanged(DataEventBuffer dataEventBuffer) {
+        for (DataEvent event : dataEventBuffer) {
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
+                // DataItem changed
+                DataItem item = event.getDataItem();
+                if (item.getUri().getPath().compareTo("/accellist") == 0) {
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+
+                    Message m = new Message();
+                    Bundle b = new Bundle();
+                    b.putFloat("x-axis", dataMap.getFloat("x-axis"));
+                    b.putFloat("y-axis", dataMap.getFloat("y-axis"));
+                    b.putFloat("z-axis", dataMap.getFloat("z-axis"));
+                    m.setData(b);
+                    wearHandler.handleMessage(m);
+
+                    Log.d("aw", "new data, sending message to handler");
+                }
+
+            } else if (event.getType() == DataEvent.TYPE_DELETED) {
+                // DataItem deleted
+            }
+        }
+    }
+
+    Handler wearHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            Log.d("aw", "handling message");
+            processAccelerometer("wear", new float[]{
+                    msg.getData().getFloat("x-axis"),
+                    msg.getData().getFloat("y-axis"),
+                    msg.getData().getFloat("z-axis")
+            });
+        }
+    };
 
 
 }

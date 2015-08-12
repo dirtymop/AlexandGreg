@@ -8,7 +8,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
 /**
  * Created by dirtymop on 8/10/2015.
  */
-@DynamoDBTable(tableName = "Preferences")
+@DynamoDBTable(tableName = "PreferencesTable")
 public class PreferencesTable{
     private String FacebookID;
     private String CustomerName;
@@ -27,15 +27,15 @@ public class PreferencesTable{
     public String getUnits() {
         return units;
     }
-    void setFacebookID(String setFacebookID)
+   public  void setFacebookID(String setFacebookID)
     {
         this.FacebookID=setFacebookID;
     }
-    void setCustomerName(String setCustomerName)
+    public void setCustomerName(String setCustomerName)
     {
         this.CustomerName=setCustomerName;
     }
-    void setUnits(String units)
+    public void setUnits(String units)
     {
         this.units=units;
     }

@@ -29,11 +29,11 @@ public class ContactsTable{
         return CustomerName;
     }
 
-    void setFacebookID(String FacebookID)
+    public void setFacebookID(String FacebookID)
     {
         this.FacebookID=FacebookID;
     }
-    void setCustomerName(String CustomerName)
+    public void setCustomerName(String CustomerName)
     {
         this.CustomerName=CustomerName;
     }
@@ -53,15 +53,16 @@ public class ContactsTable{
         return Email;
     }
 
-    void setName(String Name)
+
+   public void setName(String Name)
     {
         this.Name=Name;
     }
-    void setNumber(String number)
+   public void setNumber(String number)
     {
         this.Number=number;
     }
-    void setEmail(String email)
+   public void setEmail(String email)
     {
         this.Email=email;
     }

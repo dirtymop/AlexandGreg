@@ -42,9 +42,10 @@
             android:value="AIzaSyALvkv7DUUnJyd7NKCtj6tmhyWfpfNIND4" />
 
         <!-- Google Play services version number-->
-        <meta-data
+     <!--   <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+            -->
 
         <activity
             android:name=".Login"
@@ -64,6 +65,12 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home" >
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
         </activity>
 
         <!-- Settings -->
@@ -82,11 +89,7 @@
         <activity
             android:name=".HudActivity"
             android:label="@string/title_activity_hud" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
 

@@ -20,7 +20,7 @@
             <!-- Google maps window -->
             <ImageView
                 android:layout_width="0dp"
-                android:layout_height="150dp"
+                android:layout_height="155dp"
                 android:id="@+id/mapHistoryView"
                 android:layout_weight="0.5"
                 android:clickable="true"
@@ -33,20 +33,22 @@
                 android:layout_weight="0.5"
                 android:weightSum="1">
 
-                <!-- Placeholder for circle progress bar -->
-                <ProgressBar
-                    style="?android:attr/progressBarStyleLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.5"
-                    android:id="@+id/historyProgress"
-                    android:layout_gravity="center"/>
+                    <!-- Placeholder for circle progress bar
+                        <ProgressBar
+                                style="?android:attr/progressBarStyleLarge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.5"
+                                android:id="@+id/historyProgress"
+                                android:layout_gravity="center"/>
+
+                     -->
 
                 <!-- Layout for data -->
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="0.5">
 
                     <!-- Data names -->
@@ -60,25 +62,30 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Distance:"/>
+                            android:text="Distance:"
+                            android:hint="hello"
+                            android:textColor="@color/material_blue_grey_800"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Speed:"/>
+                            android:text="Speed:"
+                            android:textColor="@color/material_blue_grey_800"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Heartrate:"/>
+                            android:text="Heartrate:"
+                            android:textColor="@color/material_blue_grey_800"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Elevation:"/>
+                            android:text="Elevation:"
+                            android:textColor="@color/material_blue_grey_800"/>
                     </LinearLayout>
 
                     <!-- Data values -->
@@ -93,28 +100,32 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:hint="----"
-                            android:id="@+id/distanceHistoryView" />
+                            android:id="@+id/distanceHistoryView"
+                            android:textColor="@color/material_blue_grey_800" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="----"
-                            android:id="@+id/speedHistoryView" />
+                            android:id="@+id/speedHistoryView"
+                            android:textColor="@color/material_blue_grey_800"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="----"
-                            android:id="@+id/heartrateHistoryView" />
+                            android:id="@+id/heartrateHistoryView"
+                            android:textColor="@color/material_blue_grey_800"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="----"
-                            android:id="@+id/elevationHistoryView" />
+                            android:id="@+id/elevationHistoryView"
+                            android:textColor="@color/material_blue_grey_800"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

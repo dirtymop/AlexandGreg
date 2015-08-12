@@ -177,7 +177,7 @@ public class HudActivity
 //                e.printStackTrace();
 //            }
 //        }
-        bindWithService();
+      //  bindWithService();
     }
 
     @Override

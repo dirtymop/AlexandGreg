@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.classes.Contact;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
+import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.History;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
@@ -25,7 +27,7 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
 
     private FragmentManager fm;
 
-    private Fragment history;
+    private History history;
     private Button selectMapButton;
 
     // SQLite database
@@ -38,11 +40,34 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // SQLite
+        dbHelper = new DatabaseHelper(this);
+        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+        dbHelper.createTables(db);
+        dbHelper.insertHistoryEntry(db, new HistoryTable(
+                "1111",
+                "1111",
+                "1111",
+                "1111",
+                "1111",
+                "1111",
+                "1111"
+        ));
+        dbHelper.insertHistoryEntry(db, new HistoryTable(
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222"
+        ));
+
         // Initialize the fragment manager.
         fm = getFragmentManager();
 
         // Initialize home screen fragments.
-        history = fm.findFragmentByTag(TAG_FRAG_HISTORY);
+        history = (History) fm.findFragmentByTag(TAG_FRAG_HISTORY);
 
         // Initialize start button
         selectMapButton = (Button) findViewById(R.id.goToSelectMap);
@@ -62,12 +87,11 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
             Toast.makeText(getApplicationContext(), "added history", Toast.LENGTH_SHORT).show();
         }
 
-        // SQLite
-        dbHelper = new DatabaseHelper(this);
-        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
-        dbHelper.createTables(db);
-        dbHelper.insertContact(db, new Contact("Alex", "540-419-7390", "acd1797@vt.edu"), "derieux");
-        dbHelper.getContact(db);
+        // Add database entries to the history fragment adapter
+        for (HistoryTable entry : dbHelper.getHistoryEntry(db)) {
+            Log.d("home", "[entry]: " + entry.getFacebookID());
+//            history.addHistoryEntry(entry);
+        }
     }
 
     @Override

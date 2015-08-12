@@ -21,6 +21,31 @@ public class HistoryTable{
     private String elevation;
     private String avgspeed;
 
+    // Empty constructor
+    public HistoryTable() {
+        super();
+    }
+
+    // Constructor with arguments
+    public HistoryTable(String FacebookID,
+                        String CustomerName,
+                        String latsandlong,
+                        String date,
+                        String time,
+                        String elevation,
+                        String avgspeed) {
+        super();
+
+        // Initialize values
+        this.FacebookID = FacebookID;
+        this.CustomerName = CustomerName;
+        this.latsandlong = latsandlong;
+        this.date = date;
+        this.time = time;
+        this.elevation = elevation;
+        this.avgspeed = avgspeed;
+    }
+
     @DynamoDBRangeKey(attributeName ="FacebookID")
     public String getFacebookID() {
         return FacebookID;

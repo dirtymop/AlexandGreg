@@ -37,7 +37,8 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
 
     @Override
     public void onClick(View v) {
-
+        // Open up history view layout
+        // Show details on specific entry
     }
 
     @Override

@@ -1,8 +1,10 @@
 package com.example.dirtymop.myapplication.services;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -66,6 +68,13 @@ public class LocationAndSensorService
     private ArrayList<Float> gyroData;
     private ArrayList<Float> accelData;
 
+//    private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Log.d("service", "received broadcast in service!");
+//        }
+//    };
+
 
     /*
     * Binder class
@@ -86,6 +95,15 @@ public class LocationAndSensorService
     * Service methods
     * */
     public LocationAndSensorService() {
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        Log.d("service", "onCreate started...");
+
+        Log.d("service", "onCreate finished...");
     }
 
     // NOTE: do all location and service stuff onBind.
@@ -137,6 +155,9 @@ public class LocationAndSensorService
         // Create sensors.
         buildSensors();
 
+        // Send message to activity that service has started
+        newBroadcast();
+
         // START_STICKY: service will be explicitly started and stopped for arbitrary amounts of time.
         return START_STICKY;
     }
@@ -153,11 +174,22 @@ public class LocationAndSensorService
 
         // Unregister the sensors from their listeners.
         stopSensors();
+
+        // unregister the broadcast receiver
+//        unregisterReceiver(serviceReceiver);
     }
 
     // Assign the activity that service can send callbacks to.
     public void sendCallbacks(HudActivity activity) {
         this.activity = activity;
+    }
+
+    public void newBroadcast() {
+        Log.d("service","sending broadcast...");
+        Intent intent = new Intent();
+        intent.setAction("toActivity");
+        sendBroadcast(intent);
+        Log.d("service", "broadcast sent!");
     }
     /*
     * --------------------

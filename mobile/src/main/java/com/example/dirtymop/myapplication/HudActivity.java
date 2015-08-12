@@ -53,8 +53,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -81,6 +83,9 @@ public class HudActivity
     LatLng lastLatLng = null;
     HashMap<String, String> route;
     int routeIndex;
+    private final float ZOOM_LEVEL = 17;
+    private final int ZOOM_DURATION = 1000; // milliseconds
+    private Marker currentMarker = null;
 
     // Service member variables
     LocationAndSensorService service;
@@ -101,6 +106,7 @@ public class HudActivity
 
     // Android Wear
     AndroidWear aw;
+    private int count = 0;
 
     // SQLite database
     private SQLiteDatabase db;
@@ -220,13 +226,16 @@ public class HudActivity
         updatePrimaryPath(current);
         centerMapOnLocation(current);
 
+        // Update marker to current location
+        markerOnLocation(current);
+
         // Place a marker @ the starting location
-        if (routeIndex == 0) {
-            googleMap.addMarker(
-                    new MarkerOptions()
-                            .position(current)
-                            .title("Start: " + getCurrentTime()));
-        }
+//        if (routeIndex == 0) {
+//            googleMap.addMarker(
+//                    new MarkerOptions()
+//                            .position(current)
+//                            .title("Start: " + getCurrentTime()));
+//        }
 
         // Save latitude and longitude to the map
         String locationString = Double.toString(current.latitude)
@@ -235,8 +244,17 @@ public class HudActivity
         route.put(Integer.toString(routeIndex), locationString);
         routeIndex++; // Increment the route index.
 
-        // Send Lat/Lng to AW.
+        Log.d("hud","updating location");
+
         aw.sendLatLng(current);
+
+//        if (count == 2) {
+//            Toast.makeText(this, "sending coordinates to wear!", Toast.LENGTH_SHORT).show();
+//            count = 0;
+//            // Send Lat/Lng to AW.
+//            aw.sendLatLng(current);
+//        }
+//        else count++;
     }
 
     public boolean isOverThreshold(double[] mobile, double[] wear) {
@@ -423,7 +441,18 @@ public class HudActivity
     }
 
     private void centerMapOnLocation(LatLng loc) {
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, ZOOM_LEVEL));
+    }
+    private void markerOnLocation(LatLng loc) {
+        if (currentMarker != null)  {
+            currentMarker.remove();
+        }
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(loc)
+                .visible(true)
+                .title("hello world")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_dot));
+        currentMarker = googleMap.addMarker(markerOptions);
     }
 
     @Override

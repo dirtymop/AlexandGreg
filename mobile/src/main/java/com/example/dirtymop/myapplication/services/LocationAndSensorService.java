@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tagmanager.DataLayer;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -54,7 +55,7 @@ public class LocationAndSensorService
     * Location member variables
     * */
     private LocationRequest mLocationRequest;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient locationGoogleApiClient, dataGoogleApiClient;
     private long LOCATION_INTERVAL = 500; // milliseconds
     private Bundle locationBundle;
     private volatile boolean isBuilt = false;
@@ -117,7 +118,8 @@ public class LocationAndSensorService
         editor.commit();
 
         // Connect to the GoogleApiClient
-        mGoogleApiClient.connect();
+        locationGoogleApiClient.connect();
+//        dataGoogleApiClient.connect();
 
         // Connect sensors to sensor listeners.
         startSensors();
@@ -167,10 +169,13 @@ public class LocationAndSensorService
         super.onDestroy();
 
         // Disconnect from the GoogleApiClient on service destruction.
-        if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
+        if (locationGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(locationGoogleApiClient, this);
+            locationGoogleApiClient.disconnect();
         }
+//        if (dataGoogleApiClient.isConnected()) {
+//            dataGoogleApiClient.disconnect();
+//        }
 
         // Unregister the sensors from their listeners.
         stopSensors();
@@ -200,12 +205,18 @@ public class LocationAndSensorService
     * GoogleApiClient methods
     * */
     protected void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        locationGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .addApi(Wearable.API)
                 .build();
+
+//        dataGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .addApi(Wearable.API)
+//                .build();
 
         isBuilt = true;
     }
@@ -244,7 +255,7 @@ public class LocationAndSensorService
         // Initialize the sensor manager.
         sensorManager = (SensorManager) getSystemService(activity.SENSOR_SERVICE);
 
-        // Initialize sensors.
+        // Initialize sensor
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
@@ -340,7 +351,10 @@ public class LocationAndSensorService
                 .setFastestInterval(100); // Set fastest update interval to 1 second
 
         // Run the request for updates.
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        LocationServices.FusedLocationApi.requestLocationUpdates(locationGoogleApiClient, mLocationRequest, this);
+
+        // Add data API listener
+//        Wearable.DataApi.addListener(dataGoogleApiClient, this);
     }
 
     @Override
@@ -371,42 +385,41 @@ public class LocationAndSensorService
     * */
     @Override
     public void onDataChanged(DataEventBuffer dataEventBuffer) {
-        for (DataEvent event : dataEventBuffer) {
-            if (event.getType() == DataEvent.TYPE_CHANGED) {
-                // DataItem changed
-                DataItem item = event.getDataItem();
-                if (item.getUri().getPath().compareTo("/accellist") == 0) {
-                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-
-                    Message m = new Message();
-                    Bundle b = new Bundle();
-                    b.putFloat("x-axis", dataMap.getFloat("x-axis"));
-                    b.putFloat("y-axis", dataMap.getFloat("y-axis"));
-                    b.putFloat("z-axis", dataMap.getFloat("z-axis"));
-                    m.setData(b);
-                    wearHandler.handleMessage(m);
-
-                    Log.d("aw", "new data, sending message to handler");
-                }
-
-            } else if (event.getType() == DataEvent.TYPE_DELETED) {
-                // DataItem deleted
-            }
-        }
+//        for (DataEvent event : dataEventBuffer) {
+//            if (event.getType() == DataEvent.TYPE_CHANGED) {
+//                // DataItem changed
+//                DataItem item = event.getDataItem();
+//                if (item.getUri().getPath().compareTo("/accellist") == 0) {
+//                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+//
+//                    Log.d("aw", "new data, sending message to handler");
+//                    Message m = new Message();
+//                    Bundle b = new Bundle();
+//                    b.putFloat("x-axis", dataMap.getFloat("x-axis"));
+//                    b.putFloat("y-axis", dataMap.getFloat("y-axis"));
+//                    b.putFloat("z-axis", dataMap.getFloat("z-axis"));
+//                    m.setData(b);
+//                    wearHandler.handleMessage(m);
+//                }
+//
+//            } else if (event.getType() == DataEvent.TYPE_DELETED) {
+//                // DataItem deleted
+//            }
+//        }
     }
 
-    Handler wearHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-
-            Log.d("aw", "handling message");
-            processAccelerometer("wear", new float[]{
-                    msg.getData().getFloat("x-axis"),
-                    msg.getData().getFloat("y-axis"),
-                    msg.getData().getFloat("z-axis")
-            });
-        }
-    };
+//    Handler wearHandler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//
+//            Log.d("aw", "handling message");
+//            processAccelerometer("wear", new float[]{
+//                    msg.getData().getFloat("x-axis"),
+//                    msg.getData().getFloat("y-axis"),
+//                    msg.getData().getFloat("z-axis")
+//            });
+//        }
+//    };
 
 
 }

@@ -3,11 +3,12 @@
     package="com.example.dirtymop.myapplication" >
 
     <uses-feature android:name="android.hardware.type.watch" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Google Maps API used OpenGL ES -->
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true"/>
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +26,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyALvkv7DUUnJyd7NKCtj6tmhyWfpfNIND4" />
 
-        <!-- Google Play services version number-->
+        <!-- Google Play services version number -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -42,6 +43,10 @@
         <activity
             android:name=".HudWearActivity"
             android:label="@string/title_activity_hud_wear" >
+        </activity>
+        <activity
+            android:name=".HistoryWearActivity"
+            android:label="@string/title_activity_history_wear" >
         </activity>
     </application>
 

@@ -7,5 +7,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="basic_wear_long_press_intro">Welcome</string>
+    <string name="title_activity_history_wear">HistoryWearActivity</string>
 
 </resources>

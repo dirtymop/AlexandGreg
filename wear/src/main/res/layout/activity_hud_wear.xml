@@ -11,6 +11,27 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/waitLayout"
+        android:gravity="center">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/waitProgress" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="connecting..."
+            android:id="@+id/waitMessage" />
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/mapWearFrame"
         android:layout_width="match_parent"

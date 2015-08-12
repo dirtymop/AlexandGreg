@@ -47,7 +47,7 @@ public class DatabaseHelper {
     //Preferences Entry column names
     private  static final String KEY_PREFERENCES_Units="Units";
 
-
+public HistoryTable theHistorytable;
 
     // Table create statments
     private static final String CREATE_TABLE_CONTACTS = "CREATE TABLE IF NOT EXISTS "
@@ -154,11 +154,6 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             Log.d("db", "[exception] insert History entry failed: " + e.getMessage());
         }
-
-
-
-
-
     }
 
     public boolean saveContactsTable () {return true;}
@@ -226,6 +221,48 @@ public class DatabaseHelper {
         return completehistory;
     }
 
+    public void Pullfromthecloud(SQLiteDatabase db)
+    {
+        HistoryTable entry=new HistoryTable();
+
+      //  insertHistoryEntry(db,entry);
+
+    }
+
+    private class Pullfromcloud extends AsyncTask<Integer, Integer, Integer>
+    {
+
+        private Context context;
+        public Pullfromcloud(Context context) {
+            super();
+
+            this.context = context;
+        }
+
+        @Override
+        protected Integer doInBackground(Integer... params) {
+            Log.d("help", "inside asynctask load from server");
+            HistoryTable pulled= new HistoryTable();
+
+
+                CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                        this.context,    /* get the context for the application */
+                        "us-east-1:39061ec6-5149-43f4-904f-d3f14799bc63",    /* Identity Pool ID */
+                        Regions.US_EAST_1           /* Region for your identity pool--US_EAST_1 or EU_WEST_1*/
+                );
+                AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+                DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+                pulled= mapper.load(HistoryTable.class, "1234567890","1234567890");
+
+            pulled.getFacebookID();
+
+
+
+                 //   pulled= mapper.load(HistoryTable.class, "1234567890");
+              //   theHistorytable=selectedhistorytableentry;
+            return null;
+        }
+    }
     public void Savetothecloud(ArrayList<HistoryTable> ht,ContactsTable ct, PreferencesTable pt)
     {
 
@@ -234,6 +271,8 @@ public class DatabaseHelper {
         }
         new SaveaContactsentry(this.context).execute(ct);
         new SaveaPerferencesentry(this.context).execute(pt);
+
+
 
 
     }

@@ -2,6 +2,7 @@ package com.example.dirtymop.myapplication;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -30,8 +31,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +53,7 @@ import com.example.dirtymop.myapplication.classes.AndroidWear;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.fragments.NewMapSelection;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
+import com.example.dirtymop.myapplication.fragments.RetainedFragment;
 import com.example.dirtymop.myapplication.services.LocationAndSensorService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -74,23 +79,29 @@ public class HudActivity
         implements ServiceConnection,
         OnMapReadyCallback {
 
+    private static final String TAG_FRAG_RETAINED = "RetainedFragment";
     TextView distance, speed;//latitude, longitude, accuracy, altitude, speed, acceleration;
+    Button closeHud;
+    LinearLayout connectionLayout;
     private int LOCATION_DISTANCE_REFRESH = 0;  // meters
     private int LOCATION_TIME_REFRESH = 500;    // milliseconds
 
     // Fragments
     FragmentManager fm;
     MapFragment mapFragment;
+    RetainedFragment retainedFragment;
     private static final String TAG_FRAG_MAP = "map_fragment";
 
     // Google Maps
     GoogleMap googleMap;
     LatLng lastLatLng = null;
     HashMap<String, String> route;
+    ArrayList<LatLng> currentRoute = null;
     int routeIndex;
     private final float ZOOM_LEVEL = 17;
     private final int ZOOM_DURATION = 1000; // milliseconds
     private Marker currentMarker = null;
+    boolean isRestored = false;
 
     // Service member variables
     LocationAndSensorService service;
@@ -127,6 +138,7 @@ public class HudActivity
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,6 +150,65 @@ public class HudActivity
 
         // Set view.
         setContentView(R.layout.activity_hud);
+
+        Log.d("hud", "beginning map init...");
+        // Initialize Google Maps fragment
+        initMap();
+        // Assign the current activity to receive callbacks from Google Maps.
+        setMapCallbacks(this);
+        Log.d("hud", "map init finished!");
+
+
+        IntentFilter intentFilter = new IntentFilter("toActivity");
+        registerReceiver(activityReceiver, intentFilter);
+        createService();
+
+        speed = (TextView) findViewById(R.id.speed);
+        distance = (TextView) findViewById(R.id.distance);
+        closeHud = (Button) findViewById(R.id.closeHudButton);
+        closeHud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        connectionLayout = (LinearLayout) findViewById(R.id.connectionLayout);
+        connectionLayout.setVisibility(View.VISIBLE);
+
+        if (getFragmentManager().findFragmentByTag(TAG_FRAG_RETAINED) == null) {
+            retainedFragment = new RetainedFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.add(retainedFragment,TAG_FRAG_RETAINED);
+            fragmentTransaction.commit();
+        }
+        if (savedInstanceState != null) {
+            //Every time during the recreate of the activity, the retainedFragment will be lost, so we need to reassign the retainedFragment
+            retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag(TAG_FRAG_RETAINED);
+            currentRoute = retainedFragment.getRoute();
+            aw = retainedFragment.getAndroidWear();
+            route = retainedFragment.getHashRoute();
+            routeIndex = retainedFragment.getRouteIndex();
+
+            speed.setText(String.format("%.2f", retainedFragment.getSpeed()) + " [mph]");
+            distance.setText(String.format("%.2f", retainedFragment.getDistance()) + " [m]");
+
+            isRestored = true;
+        }
+        else {
+            // Initialize Android Wear
+            aw = new AndroidWear(this);
+            retainedFragment.setAndroidWear(aw);
+
+            // Create new hashmap for route
+            route = new HashMap<String, String>();
+            retainedFragment.updateHashRoute(route);
+
+            currentRoute = new ArrayList<LatLng>();
+            retainedFragment.updateRoute(currentRoute);
+
+            routeIndex = 0;
+            retainedFragment.setRouteIndex(routeIndex);
+        }
 
 
         //testing history view ----------------------------------------------
@@ -159,18 +230,18 @@ public class HudActivity
         */
         //-------------------------------------------------------------------
 
-        // Create service
-        IntentFilter intentFilter = new IntentFilter("toActivity");
-        registerReceiver(activityReceiver, intentFilter);
-        createSerice();
+//        // Create service
+//        IntentFilter intentFilter = new IntentFilter("toActivity");
+//        registerReceiver(activityReceiver, intentFilter);
+//        createSerice();
 
         // Initialize TextView
 //        latitude = (TextView) findViewById(R.id.latitude);
 //        longitude = (TextView) findViewById(R.id.longitude);
 //        accuracy = (TextView) findViewById(R.id.accuracy);
 //        altitude = (TextView) findViewById(R.id.altitude);
-        speed = (TextView) findViewById(R.id.speed);
-        distance = (TextView) findViewById(R.id.distance);
+//        speed = (TextView) findViewById(R.id.speed);
+//        distance = (TextView) findViewById(R.id.distance);
 //        acceleration = (TextView) findViewById(R.id.acceleration);
 //        plot = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 
@@ -187,26 +258,40 @@ public class HudActivity
 //        final PlotStatistics altiStats = new PlotStatistics(1000, false);
 //        plot.addListener(altiStats);
 
-        Log.d("hud", "beginning map init...");
-        // Initialize Google Maps fragment
-        initMap();
-        // Assign the current activity to receive callbacks from Google Maps.
-        setMapCallbacks(this);
-        Log.d("hud", "map init finished!");
+//        Log.d("hud", "beginning map init...");
+//        // Initialize Google Maps fragment
+//        initMap();
+//        // Assign the current activity to receive callbacks from Google Maps.
+//        setMapCallbacks(this);
+//        Log.d("hud", "map init finished!");
+//
+//        // Initialize Android Wear
+//        aw = new AndroidWear(this);
+//
+//        // Create new hashmap for route
+//        route = new HashMap<String, String>();
+//        routeIndex = 0;
+    }
 
-        // Initialize Android Wear
-        aw = new AndroidWear(this);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        // Create new hashmap for route
-        route = new HashMap<String, String>();
-        routeIndex = 0;
+
+        Log.d("hud", "saving instance state");
+        retainedFragment.setAndroidWear(aw);
+        retainedFragment.setRouteIndex(routeIndex);
+        retainedFragment.updateRoute(currentRoute);
+        retainedFragment.updateHashRoute(route);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        if (bound) this.unbindService(this); bound = false;
+        if (!this.isFinishing())
+            if (bound)
+                this.unbindService(this); bound = false;
     }
 
     @Override
@@ -240,9 +325,13 @@ public class HudActivity
 
         // Set as current location
         LatLng current = new LatLng(location.getDouble("latitude"), location.getDouble("longitude"));
+        currentRoute.add(current);
 
         speed.setText(String.format("%.2f", location.getFloat("speed")) + " [mph]");
         distance.setText(String.format("%.2f", location.getFloat("distance")) + " [m]");
+
+        retainedFragment.setDistance(location.getFloat("distance"));
+        retainedFragment.setSpeed(location.getFloat("speed"));
 //        latitude.setText("lat: " + Double.toString(location.getDouble("latitude")));
 //        longitude.setText("lon: " + Double.toString(location.getDouble("longitude")));
 //        altitude.setText("alt: " + Double.toString(location.getDouble("altitude")));
@@ -342,7 +431,7 @@ public class HudActivity
         if (zHigh == 999.0 || zHigh < data.getDouble("z-axis")) zHigh = zCurrent;
 
         // Threshold
-        if (isOverThreshold(new double[] {xMobile, yMobile, zMobile}, new double[] {xWear, yWear, zWear})) {
+        if (isOverThreshold(new double[]{xMobile, yMobile, zMobile}, new double[]{xWear, yWear, zWear})) {
             handleEmergency();
         }
     }
@@ -379,7 +468,7 @@ public class HudActivity
     * Service connection methods
     *
     * */
-    public void createSerice() {
+    public void createService() {
         if (!serviceIsStarted()) this.startService(new Intent(HudActivity.this, LocationAndSensorService.class));
     }
 
@@ -486,8 +575,20 @@ public class HudActivity
     public void onMapReady(GoogleMap googleMap) {
         Log.d("hud", "map is ready");
 
+        connectionLayout.setVisibility(View.GONE);
+
         // Set the local Google Map object.
         this.googleMap = googleMap;
+
+        if (isRestored) {
+            for (int i = 0; i < currentRoute.size(); i++) {
+                updatePrimaryPath(currentRoute.get(i));
+            }
+            centerMapOnLocation(currentRoute.get(currentRoute.size()-1));
+            markerOnLocation(currentRoute.get(currentRoute.size()-1));
+
+            isRestored = false;
+        }
     }
     /*
     * -------------------------

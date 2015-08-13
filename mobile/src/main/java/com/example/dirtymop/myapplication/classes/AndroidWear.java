@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.dirtymop.myapplication.HudActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -37,13 +38,15 @@ public class AndroidWear
     * */
     // Context of instantiating application
     private Context context;
+    private HudActivity activity;
     // Google API Client
     private GoogleApiClient googleApiClient;
 
 
 
-    public AndroidWear(final Context context) {
-        this.context = context;
+    public AndroidWear(final HudActivity activity) {
+        this.activity = activity;
+        this.context = activity.getApplicationContext();
 
 
         // Iitialize Google API client.
@@ -97,17 +100,49 @@ public class AndroidWear
         public void handleMessage(Message msg) {
 
             Log.d("aw", "handling message: "
-                + msg.getData().getFloat("x-axis")
-                    + msg.getData().getFloat("y-axis")
-                    + msg.getData().getFloat("z-axis")
+                            + msg.getData().getFloat("x-axis")
+                            + msg.getData().getFloat("y-axis")
+                            + msg.getData().getFloat("z-axis")
             );
-//            processAccelerometer("wear", new float[]{
-//                    msg.getData().getFloat("x-axis"),
-//                    msg.getData().getFloat("y-axis"),
-//                    msg.getData().getFloat("z-axis")
-//            });
+            processAccelerometer("wear", new float[]{
+                    msg.getData().getFloat("x-axis"),
+                    msg.getData().getFloat("y-axis"),
+                    msg.getData().getFloat("z-axis")
+            });
         }
     };
+
+    private void processAccelerometer(String type, float[] values) {
+        // alpha is calculated as t / (t + dT)
+        // with t, the low-pass filter's time-constant
+        // and dT, the event delivery rate
+
+        Log.d("accelerometer", "data cam from: " + type);
+
+        final double alpha = 0.8;
+        double[] gravity = new double[3];
+        double[] linear_acceleration = new double[3];
+
+        // Determine what contribution of gravity is.
+        gravity[0] = alpha * gravity[0] + (1 - alpha) * values[0];
+        gravity[1] = alpha * gravity[1] + (1 - alpha) * values[1];
+        gravity[2] = alpha * gravity[2] + (1 - alpha) * values[2];
+
+        // Calculate true linear acceleration without gravity
+        linear_acceleration[0] = values[0] - gravity[0];
+        linear_acceleration[1] = values[1] - gravity[1];
+        linear_acceleration[2] = values[2] - gravity[2];
+
+
+        // Push the data to the activity as a bundle.
+        Bundle b = new Bundle();
+        b.putDouble("x-axis", linear_acceleration[0]);
+        b.putDouble("y-axis", linear_acceleration[1]);
+        b.putDouble("z-axis", linear_acceleration[2]);
+
+        this.activity.updateAccelerometer(type, b);
+    }
+
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {

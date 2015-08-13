@@ -68,6 +68,7 @@ public class LocationAndSensorService
     private Sensor accelerometer;
     private ArrayList<Float> gyroData;
     private ArrayList<Float> accelData;
+    private int sensorDelay = 0;
 
 //    private BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
 //        @Override
@@ -212,12 +213,6 @@ public class LocationAndSensorService
                 .addApi(Wearable.API)
                 .build();
 
-//        dataGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(Wearable.API)
-//                .build();
-
         isBuilt = true;
     }
     /*
@@ -287,7 +282,12 @@ public class LocationAndSensorService
 
             // Determine which sensor triggered the event listener
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                processAccelerometer("mobile", new float[] {event.values[0], event.values[1], event.values[2]});
+                if (sensorDelay == 10) {
+                    sensorDelay = 0;
+                    processAccelerometer("mobile", new float[] {event.values[0], event.values[1], event.values[2]});
+                } else {
+                    sensorDelay++;
+                }
             }
             if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
 
@@ -331,7 +331,7 @@ public class LocationAndSensorService
 
         this.activity.updateAccelerometer(type, b);
 
-        Log.d("accelerometer", "\n\nX: " + linear_acceleration[0] + "\nY: " + linear_acceleration[1] + "\nZ: " + linear_acceleration[2]);
+//        Log.d("accelerometer", "\n\nX: " + linear_acceleration[0] + "\nY: " + linear_acceleration[1] + "\nZ: " + linear_acceleration[2]);
     }
     /*
     * ----------------------

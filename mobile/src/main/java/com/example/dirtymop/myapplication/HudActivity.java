@@ -258,7 +258,7 @@ public class HudActivity
     }
 
     public boolean isOverThreshold(double[] mobile, double[] wear) {
-        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0) && (wear[0] > 29.0 || wear[1] > 29.0 || wear[2] > 29.0))
+        if ((mobile[0] > 11.0 || mobile[1] > 11.0 || mobile[2] > 11.0) && (wear[0] > 11.0 || wear[1] > 11.0 || wear[2] > 11.0))
             return true;
 //        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0))
 //            return true;
@@ -277,6 +277,31 @@ public class HudActivity
             xMobile = xCurrent;
             yMobile = yCurrent;
             zMobile = zCurrent;
+
+            // Set textview text.
+            acceleration.setText("Acceleration peaks:"
+                    + "\nX: " + xHigh
+                    + "\nY: " + yHigh
+                    + "\nZ: " + zHigh);
+
+            // Time for domain plot
+            Calendar c = Calendar.getInstance();
+            long now = c.getTimeInMillis();
+
+            // Only plot 50 entries at a time.
+            if (xAccelerationSeries.size() > 50){
+                xAccelerationSeries.removeFirst();
+                yAccelerationSeries.removeFirst();
+                zAccelerationSeries.removeFirst();
+            }
+
+            // Add entry to each data series.
+            xAccelerationSeries.addLast(now, data.getDouble("x-axis"));
+            yAccelerationSeries.addLast(now, data.getDouble("y-axis"));
+            zAccelerationSeries.addLast(now, data.getDouble("z-axis"));
+
+            // Redraw the plot with the new data.
+            plot.redraw();
         }
         if (type.equals("wear")) {
             xWear = xCurrent;
@@ -293,31 +318,6 @@ public class HudActivity
         if (isOverThreshold(new double[] {xMobile, yMobile, zMobile}, new double[] {xWear, yWear, zWear})) {
             handleEmergency();
         }
-
-        // Set textview text.
-        acceleration.setText("Acceleration peaks:"
-                + "\nX: " + xHigh
-                + "\nY: " + yHigh
-                + "\nZ: " + zHigh);
-
-        // Time for domain plot
-        Calendar c = Calendar.getInstance();
-        long now = c.getTimeInMillis();
-
-        // Only plot 50 entries at a time.
-        if (xAccelerationSeries.size() > 50){
-            xAccelerationSeries.removeFirst();
-            yAccelerationSeries.removeFirst();
-            zAccelerationSeries.removeFirst();
-        }
-
-        // Add entry to each data series.
-        xAccelerationSeries.addLast(now, data.getDouble("x-axis"));
-        yAccelerationSeries.addLast(now, data.getDouble("y-axis"));
-        zAccelerationSeries.addLast(now, data.getDouble("z-axis"));
-
-        // Redraw the plot with the new data.
-        plot.redraw();
     }
 
     // Handles all methods pertaining to emergency response.

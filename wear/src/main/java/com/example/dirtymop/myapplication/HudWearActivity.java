@@ -78,8 +78,9 @@ public class HudWearActivity
     private GoogleApiClient googleApiClient;
     private int count = 0;
     private LatLng lastLatLng = null;
-    private final float ZOOM_LEVEL = 17;
-    private final int ZOOM_DURATION = 1000; // milliseconds
+    private static final float ZOOM_LEVEL = 17;
+    private static final int ZOOM_DURATION = 1000; // milliseconds
+    private static final float PATH_LINE_WIDTH = 5;
     private volatile boolean connected = false;
     private Marker currentMarker = null;
 
@@ -235,7 +236,7 @@ public class HudWearActivity
     private void updatePrimaryPath(LatLng current) {
         if (googleMap != null) {
             PolylineOptions options = new PolylineOptions();
-            options.color(Color.RED).width(10).visible(true);
+            options.color(Color.RED).width(PATH_LINE_WIDTH).visible(true);
 
             if (lastLatLng != null) {
                 options.add(lastLatLng);
@@ -347,7 +348,7 @@ public class HudWearActivity
             // Determine which sensor triggered the event listener
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 // Send data to phone
-                if (count == 500) {
+                if (count == 10) {
                     count = 0;
                     Log.d("hudwear", "send accel data to mobile..."
                                     + "\nx-axis: " + event.values[0]

@@ -50,6 +50,7 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeriesFormatter;
 import com.example.dirtymop.myapplication.classes.AndroidWear;
+import com.example.dirtymop.myapplication.classes.ContactsTable;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.fragments.NewMapSelection;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
@@ -430,6 +431,8 @@ public class HudActivity
         if (yHigh == 999.0 || yHigh < data.getDouble("y-axis")) yHigh = yCurrent;
         if (zHigh == 999.0 || zHigh < data.getDouble("z-axis")) zHigh = zCurrent;
 
+
+
         // Threshold
         if (isOverThreshold(new double[]{xMobile, yMobile, zMobile}, new double[]{xWear, yWear, zWear})) {
             handleEmergency();
@@ -442,7 +445,17 @@ public class HudActivity
 
         // Ensure user can make phone calls.
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
-            call("5404197390");
+
+            // creates new contact varible
+            ContactsTable EMS=new ContactsTable();
+            DatabaseHelper dbhelper= new DatabaseHelper(this.getApplicationContext());
+            SQLiteDatabase mydb = dbhelper.databaseOpenOrCreate("local.db");
+            dbhelper.createTables(mydb);
+            EMS=dbhelper.getContact(mydb);
+            //----------------------------------------------------------
+            Log.d("HudActivity","call being placed to" + EMS.getName());
+            call(EMS.getNumber());
+
         }
         else {
             Toast.makeText(this, "calling not supported on this device.", Toast.LENGTH_SHORT).show();

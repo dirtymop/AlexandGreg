@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.classes.Contact;
+import com.example.dirtymop.myapplication.classes.ContactsTable;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.History;
@@ -39,6 +42,21 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+
+
+
+        ContactsTable EMS = new ContactsTable();
+        EMS.setFacebookID("thefullbic");
+        EMS.setCustomerName("GG");
+        EMS.setName(sharedPrefs.getString("nameofcontact", "NULL"));
+        EMS.setNumber(sharedPrefs.getString("numberofcontact", "NULL"));
+        EMS.setEmail(sharedPrefs.getString("emailofcontact", "NULL"));
+        DatabaseHelper dbhelper= new DatabaseHelper(this.getApplicationContext());
+        SQLiteDatabase mydb = dbhelper.databaseOpenOrCreate("local.db");
+        dbhelper.createTables(mydb);
+        dbhelper.insertContact(mydb,EMS);
 
         // SQLite
         dbHelper = new DatabaseHelper(this);

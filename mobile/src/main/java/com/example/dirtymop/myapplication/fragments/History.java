@@ -31,6 +31,7 @@ import com.example.dirtymop.myapplication.adapters.HistoryEntryAdapter;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.classes.PreferencesTable;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.wearable.DataApi;
 
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class History extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

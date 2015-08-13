@@ -8,18 +8,25 @@
             android:title="Metric"
             android:summary="Distance in Kilometers"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="Watch">
-        <PreferenceScreen >
-            <PreferenceCategory android:title="Units">
-                <CheckBoxPreference android:key="checkbox_Units"
-                    android:title="Imperial"
-                    android:summary="Distance in Miles" />
-                <CheckBoxPreference
-                    android:title="Metric"
-                    android:summary="Distance in Kilometers"/>
-            </PreferenceCategory>
 
-        </PreferenceScreen>
+    <PreferenceCategory android:title="Emergency Contact">
+                <EditTextPreference android:key="nameofcontact"
+                    android:title="Name"
+                    android:summary="Enter the Name of emergency Contact" />
+                <EditTextPreference android:key="numberofcontact"
+                    android:title="Number"
+                    android:summary="Enter the Number of the Emergency Contact"/>
+                <EditTextPreference android:key="Email of Contact"
+                    android:title="Email"
+                    android:summary="Enter the Email of the Emergency Contact"/>
+            </PreferenceCategory>
+    <PreferenceCategory android:title="Watch">
+                <CheckBoxPreference android:key="watchyesorno"
+                    android:title="Yes"
+                    android:summary="Watch in use" />
+                <CheckBoxPreference
+                    android:title="No"
+                    android:summary="Watch is not in use"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="User">
 

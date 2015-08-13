@@ -1,21 +1,26 @@
 package com.example.dirtymop.myapplication.fragments;
 
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 //import android.app.Fragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.adapters.StoredRouteAdapter;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
+import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
 import java.util.ArrayList;
 
@@ -36,6 +41,7 @@ public class StoredMapSelection extends Fragment {
 
     // List view
     private ListView entriesListView;
+    private FrameLayout expansionFrame;
 
     // List adapter
     private StoredRouteAdapter adapter;
@@ -83,6 +89,10 @@ public class StoredMapSelection extends Fragment {
 
         // Initialize the ListView
         entriesListView = (ListView) view.findViewById(R.id.storageList);
+        entriesListView.setVisibility(View.VISIBLE);
+        expansionFrame = (FrameLayout) view.findViewById(R.id.expansionFrame);
+        expansionFrame.setVisibility(View.GONE);
+
 
         // TODO: Populate the entries array list with all stored items
         // --> pull from local server.
@@ -94,9 +104,9 @@ public class StoredMapSelection extends Fragment {
 
         // Initialize the adapter
         if (entries.size() != 0)
-            adapter = new StoredRouteAdapter(getActivity().getApplicationContext(), entries);
+            adapter = new StoredRouteAdapter(this, getActivity().getApplicationContext(), entries);
         else
-            adapter = new StoredRouteAdapter(getActivity().getApplicationContext());
+            adapter = new StoredRouteAdapter(this, getActivity().getApplicationContext());
 
         // Set the adapter for the ListView
         entriesListView.setAdapter(adapter);
@@ -105,6 +115,13 @@ public class StoredMapSelection extends Fragment {
         return view;
     }
 
+    public void loadExpansion(String unique_id) {
+        expansionFrame.setVisibility(View.VISIBLE);
+        entriesListView.setVisibility(View.GONE);
 
+        EntryExpansionFragment eef = EntryExpansionFragment.newInstance(unique_id);
 
+        FragmentManager fm = getFragmentManager();
+        fm.beginTransaction().replace(R.id.expansionFrame, eef).commit();
+    }
 }

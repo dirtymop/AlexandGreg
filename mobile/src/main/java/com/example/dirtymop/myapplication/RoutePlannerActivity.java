@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -22,12 +23,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.dirtymop.myapplication.adapters.SectionsPagerAdapter;
+import com.example.dirtymop.myapplication.fragments.EntryExpansionFragment;
 import com.example.dirtymop.myapplication.fragments.NewMapSelection;
+import com.example.dirtymop.myapplication.fragments.StoredMapSelection;
 
 public class RoutePlannerActivity
         extends AppCompatActivity
         implements ActionBar.TabListener,
-        NewMapSelection.NewMapSelectionLisstener {
+        NewMapSelection.NewMapSelectionLisstener,
+        EntryExpansionFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -137,5 +141,10 @@ public class RoutePlannerActivity
     public void startHud() {
         Intent intent = new Intent(RoutePlannerActivity.this, HudActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

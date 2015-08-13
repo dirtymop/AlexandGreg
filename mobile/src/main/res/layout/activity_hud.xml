@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,74 +14,114 @@
     <!--android:paddingTop="@dimen/activity_vertical_margin"-->
     <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
 
-    <TextView
-        android:id="@+id/latitude"
-        android:text="latitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/lightgray"
-        android:layout_gravity="center"/>
+    <!--<TextView-->
+        <!--android:id="@+id/latitude"-->
+        <!--android:text="latitude"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="@color/lightgray"-->
+        <!--android:layout_gravity="center"/>-->
 
-    <TextView
-        android:id="@+id/longitude"
-        android:text="longitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/lightgray"
-        android:layout_gravity="center"/>
-    <TextView
-        android:id="@+id/accuracy"
-        android:text="accuracy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/lightgray"
-        android:layout_gravity="center"/>
-    <TextView
-        android:id="@+id/altitude"
-        android:text="altitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/lightgray"
-        android:layout_gravity="center"/>
-    <TextView
-        android:id="@+id/speed"
-        android:text="speed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/lightgray"
-        android:layout_gravity="center"/>
-    <TextView
-        android:id="@+id/acceleration"
-        android:text="acceleration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/lightgray"
-        android:layout_gravity="center"/>
+    <!--<TextView-->
+        <!--android:id="@+id/longitude"-->
+        <!--android:text="longitude"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="@color/lightgray"-->
+        <!--android:layout_gravity="center"/>-->
+    <!--<TextView-->
+        <!--android:id="@+id/accuracy"-->
+        <!--android:text="accuracy"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="@color/lightgray"-->
+        <!--android:layout_gravity="center"/>-->
+    <!--<TextView-->
+        <!--android:id="@+id/altitude"-->
+        <!--android:text="altitude"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="@color/lightgray"-->
+        <!--android:layout_gravity="center"/>-->
+    <!--<TextView-->
+        <!--android:id="@+id/speed"-->
+        <!--android:text="speed"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="@color/lightgray"-->
+        <!--android:layout_gravity="center"/>-->
+    <!--<TextView-->
+        <!--android:id="@+id/acceleration"-->
+        <!--android:text="acceleration"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="@color/lightgray"-->
+        <!--android:layout_gravity="center"/>-->
 
-    <com.androidplot.xy.XYPlot
-        android:id="@+id/mySimpleXYPlot"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.4"
-        androidPlot.title=""
-        androidPlot.domainLabel="Time"
-        androidPlot.rangeLabel="Accuracy"
-        androidPlot.graphWidget.marginTop="20dp"
-        androidPlot.graphWidget.marginLeft="15dp"
-        androidPlot.graphWidget.marginBottom="25dp"
-        androidPlot.graphWidget.marginRight="10dp"
-        androidPlot.legendWidget.iconSizeMetrics.heightMetric.value="15dp"
-        androidPlot.legendWidget.iconSizeMetrics.widthMetric.value="15dp"
-        androidPlot.legendWidget.heightMetric.value="25dp"
-        androidPlot.legendWidget.positionMetrics.anchor="right_bottom"
-        androidPlot.graphWidget.gridLinePaint.color="#000000"/>
 
     <FrameLayout
         android:id="@+id/mapFrame"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.6"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:background="@color/lightgray"></FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/hudWindow"
+        android:orientation="horizontal"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_bg_shadow"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:weightSum="1">
 
-</LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Speed: "/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Distance: "/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.05"></LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.45">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="value..."
+                android:id="@+id/speed" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="value..."
+                android:id="@+id/distance" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

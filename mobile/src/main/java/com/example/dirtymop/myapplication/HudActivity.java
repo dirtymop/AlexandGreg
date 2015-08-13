@@ -60,6 +60,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.SimpleDateFormat;
@@ -73,7 +74,7 @@ public class HudActivity
         implements ServiceConnection,
         OnMapReadyCallback {
 
-    TextView latitude, longitude, accuracy, altitude, speed, acceleration;
+    TextView distance, speed;//latitude, longitude, accuracy, altitude, speed, acceleration;
     private int LOCATION_DISTANCE_REFRESH = 0;  // meters
     private int LOCATION_TIME_REFRESH = 500;    // milliseconds
 
@@ -164,27 +165,27 @@ public class HudActivity
         createSerice();
 
         // Initialize TextView
-        latitude = (TextView) findViewById(R.id.latitude);
-        longitude = (TextView) findViewById(R.id.longitude);
-        accuracy = (TextView) findViewById(R.id.accuracy);
-        altitude = (TextView) findViewById(R.id.altitude);
+//        latitude = (TextView) findViewById(R.id.latitude);
+//        longitude = (TextView) findViewById(R.id.longitude);
+//        accuracy = (TextView) findViewById(R.id.accuracy);
+//        altitude = (TextView) findViewById(R.id.altitude);
         speed = (TextView) findViewById(R.id.speed);
-        acceleration = (TextView) findViewById(R.id.acceleration);
-        plot = (XYPlot) findViewById(R.id.mySimpleXYPlot);
+        distance = (TextView) findViewById(R.id.distance);
+//        acceleration = (TextView) findViewById(R.id.acceleration);
+//        plot = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 
         // Plotting
-//        altitudeSeries = new SimpleXYSeries("altitude");
-        xAccelerationSeries = new SimpleXYSeries("x-axis");
-        yAccelerationSeries = new SimpleXYSeries("y-axis");
-        zAccelerationSeries = new SimpleXYSeries("z-axis");
-        plot.setDomainBoundaries(-10, 10, BoundaryMode.AUTO);
-        plot.setRangeBoundaries(-10, 10, BoundaryMode.AUTO);
-        plot.setTitle("Acceleration Data");
-        plot.addSeries(xAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.RED, null, null));
-        plot.addSeries(yAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.WHITE, null, null));
-        plot.addSeries(zAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.BLUE, null, null));
-        final PlotStatistics altiStats = new PlotStatistics(1000, false);
-        plot.addListener(altiStats);
+//        xAccelerationSeries = new SimpleXYSeries("x-axis");
+//        yAccelerationSeries = new SimpleXYSeries("y-axis");
+//        zAccelerationSeries = new SimpleXYSeries("z-axis");
+//        plot.setDomainBoundaries(-10, 10, BoundaryMode.AUTO);
+//        plot.setRangeBoundaries(-10, 10, BoundaryMode.AUTO);
+//        plot.setTitle("Acceleration Data");
+//        plot.addSeries(xAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.RED, null, null));
+//        plot.addSeries(yAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.WHITE, null, null));
+//        plot.addSeries(zAccelerationSeries, new LineAndPointFormatter(Color.BLACK, Color.BLUE, null, null));
+//        final PlotStatistics altiStats = new PlotStatistics(1000, false);
+//        plot.addListener(altiStats);
 
         Log.d("hud", "beginning map init...");
         // Initialize Google Maps fragment
@@ -240,11 +241,13 @@ public class HudActivity
         // Set as current location
         LatLng current = new LatLng(location.getDouble("latitude"), location.getDouble("longitude"));
 
-        latitude.setText("lat: " + Double.toString(location.getDouble("latitude")));
-        longitude.setText("lon: " + Double.toString(location.getDouble("longitude")));
-        altitude.setText("alt: " + Double.toString(location.getDouble("altitude")));
-        accuracy.setText("acc: " + Float.toString(location.getFloat("accuracy")));
-        speed.setText("speed: " + Float.toString(location.getFloat("speed")));
+        speed.setText(String.format("%.2f", location.getFloat("speed")) + " [mph]");
+        distance.setText(String.format("%.2f", location.getFloat("distance")) + " [m]");
+//        latitude.setText("lat: " + Double.toString(location.getDouble("latitude")));
+//        longitude.setText("lon: " + Double.toString(location.getDouble("longitude")));
+//        altitude.setText("alt: " + Double.toString(location.getDouble("altitude")));
+//        accuracy.setText("acc: " + Float.toString(location.getFloat("accuracy")));
+//        speed.setText("speed: " + Float.toString(location.getFloat("speed")));
 
         // Add lat/lng to Google Maps
         updatePrimaryPath(current);
@@ -302,30 +305,30 @@ public class HudActivity
             yMobile = yCurrent;
             zMobile = zCurrent;
 
-            // Set textview text.
-            acceleration.setText("Acceleration peaks:"
-                    + "\nX: " + xHigh
-                    + "\nY: " + yHigh
-                    + "\nZ: " + zHigh);
-
-            // Time for domain plot
-            Calendar c = Calendar.getInstance();
-            long now = c.getTimeInMillis();
-
-            // Only plot 50 entries at a time.
-            if (xAccelerationSeries.size() > 50){
-                xAccelerationSeries.removeFirst();
-                yAccelerationSeries.removeFirst();
-                zAccelerationSeries.removeFirst();
-            }
-
-            // Add entry to each data series.
-            xAccelerationSeries.addLast(now, data.getDouble("x-axis"));
-            yAccelerationSeries.addLast(now, data.getDouble("y-axis"));
-            zAccelerationSeries.addLast(now, data.getDouble("z-axis"));
-
-            // Redraw the plot with the new data.
-            plot.redraw();
+//            // Set textview text.
+//            acceleration.setText("Acceleration peaks:"
+//                    + "\nX: " + xHigh
+//                    + "\nY: " + yHigh
+//                    + "\nZ: " + zHigh);
+//
+//            // Time for domain plot
+//            Calendar c = Calendar.getInstance();
+//            long now = c.getTimeInMillis();
+//
+//            // Only plot 50 entries at a time.
+//            if (xAccelerationSeries.size() > 50){
+//                xAccelerationSeries.removeFirst();
+//                yAccelerationSeries.removeFirst();
+//                zAccelerationSeries.removeFirst();
+//            }
+//
+//            // Add entry to each data series.
+//            xAccelerationSeries.addLast(now, data.getDouble("x-axis"));
+//            yAccelerationSeries.addLast(now, data.getDouble("y-axis"));
+//            zAccelerationSeries.addLast(now, data.getDouble("z-axis"));
+//
+//            // Redraw the plot with the new data.
+//            plot.redraw();
         }
         if (type.equals("wear")) {
             xWear = xCurrent;
@@ -519,6 +522,7 @@ public class HudActivity
     public void cleanup() {
 //        mapFragment.onDestroy();
         bound = false;
+        unregisterReceiver(activityReceiver);
         stopService(new Intent(HudActivity.this, LocationAndSensorService.class));
 //        service.onDestroy();
     }

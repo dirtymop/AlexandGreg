@@ -41,7 +41,6 @@ import java.util.ArrayList;
 public class LocationAndSensorService
         extends Service
         implements LocationListener,
-        DataApi.DataListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
@@ -119,9 +118,12 @@ public class LocationAndSensorService
         editor.commit();
 
         // Connect to the GoogleApiClient
+        if (locationGoogleApiClient == null) buildGoogleApiClient();
         locationGoogleApiClient.connect();
 //        dataGoogleApiClient.connect();
 
+        // Build sensors.
+        buildSensors();
         // Connect sensors to sensor listeners.
         startSensors();
 
@@ -152,11 +154,11 @@ public class LocationAndSensorService
         editor.putBoolean("service_started", true);
         editor.commit();
 
-        // Build the GoogleApiClient
-        buildGoogleApiClient();
-
-        // Create sensors.
-        buildSensors();
+//        // Build the GoogleApiClient
+//        buildGoogleApiClient();
+//
+//        // Create sensors.
+//        buildSensors();
 
         // Send message to activity that service has started
         newBroadcast();
@@ -274,11 +276,6 @@ public class LocationAndSensorService
     private SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-//            gyroData.add(gyroData.size(), event.values[0]);
-//            Log.d("service", "length: " + gyroData.size() + "gyroscope: " + String.valueOf(event.values[0]));
-
-//            Log.d("service", "length: " + accelData.size() + "accelerometer: " + String.valueOf(event.values[0]));
-//            accelData.add(accelData.size(), event.values[0]);
 
             // Determine which sensor triggered the event listener
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -306,7 +303,7 @@ public class LocationAndSensorService
         // with t, the low-pass filter's time-constant
         // and dT, the event delivery rate
 
-        Log.d("accelerometer", "data cam from: " + type);
+        Log.d("accelerometer", "data came from: " + type);
 
         final double alpha = 0.8;
         double[] gravity = new double[3];
@@ -330,8 +327,6 @@ public class LocationAndSensorService
         b.putDouble("z-axis", linear_acceleration[2]);
 
         this.activity.updateAccelerometer(type, b);
-
-//        Log.d("accelerometer", "\n\nX: " + linear_acceleration[0] + "\nY: " + linear_acceleration[1] + "\nZ: " + linear_acceleration[2]);
     }
     /*
     * ----------------------
@@ -378,48 +373,48 @@ public class LocationAndSensorService
     * */
 
 
-    /*
-    * Data API Listener methods
-    *
-    * Runs in a background thread.
-    * */
-    @Override
-    public void onDataChanged(DataEventBuffer dataEventBuffer) {
-//        for (DataEvent event : dataEventBuffer) {
-//            if (event.getType() == DataEvent.TYPE_CHANGED) {
-//                // DataItem changed
-//                DataItem item = event.getDataItem();
-//                if (item.getUri().getPath().compareTo("/accellist") == 0) {
-//                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+//    /*
+//    * Data API Listener methods
+//    *
+//    * Runs in a background thread.
+//    * */
+//    @Override
+//    public void onDataChanged(DataEventBuffer dataEventBuffer) {
+////        for (DataEvent event : dataEventBuffer) {
+////            if (event.getType() == DataEvent.TYPE_CHANGED) {
+////                // DataItem changed
+////                DataItem item = event.getDataItem();
+////                if (item.getUri().getPath().compareTo("/accellist") == 0) {
+////                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+////
+////                    Log.d("aw", "new data, sending message to handler");
+////                    Message m = new Message();
+////                    Bundle b = new Bundle();
+////                    b.putFloat("x-axis", dataMap.getFloat("x-axis"));
+////                    b.putFloat("y-axis", dataMap.getFloat("y-axis"));
+////                    b.putFloat("z-axis", dataMap.getFloat("z-axis"));
+////                    m.setData(b);
+////                    wearHandler.handleMessage(m);
+////                }
+////
+////            } else if (event.getType() == DataEvent.TYPE_DELETED) {
+////                // DataItem deleted
+////            }
+////        }
+//    }
 //
-//                    Log.d("aw", "new data, sending message to handler");
-//                    Message m = new Message();
-//                    Bundle b = new Bundle();
-//                    b.putFloat("x-axis", dataMap.getFloat("x-axis"));
-//                    b.putFloat("y-axis", dataMap.getFloat("y-axis"));
-//                    b.putFloat("z-axis", dataMap.getFloat("z-axis"));
-//                    m.setData(b);
-//                    wearHandler.handleMessage(m);
-//                }
-//
-//            } else if (event.getType() == DataEvent.TYPE_DELETED) {
-//                // DataItem deleted
-//            }
-//        }
-    }
-
-//    Handler wearHandler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//
-//            Log.d("aw", "handling message");
-//            processAccelerometer("wear", new float[]{
-//                    msg.getData().getFloat("x-axis"),
-//                    msg.getData().getFloat("y-axis"),
-//                    msg.getData().getFloat("z-axis")
-//            });
-//        }
-//    };
+////    Handler wearHandler = new Handler() {
+////        @Override
+////        public void handleMessage(Message msg) {
+////
+////            Log.d("aw", "handling message");
+////            processAccelerometer("wear", new float[]{
+////                    msg.getData().getFloat("x-axis"),
+////                    msg.getData().getFloat("y-axis"),
+////                    msg.getData().getFloat("z-axis")
+////            });
+////        }
+////    };
 
 
 }

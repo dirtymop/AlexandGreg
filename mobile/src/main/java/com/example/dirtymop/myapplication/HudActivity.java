@@ -493,7 +493,8 @@ public class HudActivity
 
     // Method for tidying up onDestroy.
     public void cleanup() {
-        mapFragment.onDestroy();
+//        mapFragment.onDestroy();
+        bound = false;
         stopService(new Intent(HudActivity.this, LocationAndSensorService.class));
 //        service.onDestroy();
     }

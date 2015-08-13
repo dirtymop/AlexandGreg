@@ -48,8 +48,8 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
 
 
         ContactsTable EMS = new ContactsTable();
-        EMS.setFacebookID("thefullbic");
-        EMS.setCustomerName("GG");
+        EMS.setFacebookID("placeholder");
+        EMS.setCustomerName("placeholder");
         EMS.setName(sharedPrefs.getString("nameofcontact", "NULL"));
         EMS.setNumber(sharedPrefs.getString("numberofcontact", "NULL"));
         EMS.setEmail(sharedPrefs.getString("emailofcontact", "NULL"));

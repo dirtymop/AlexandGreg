@@ -2,6 +2,7 @@ package com.example.dirtymop.myapplication;
 
 import java.util.Locale;
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -21,8 +22,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.dirtymop.myapplication.adapters.SectionsPagerAdapter;
+import com.example.dirtymop.myapplication.fragments.NewMapSelection;
 
-public class RoutePlannerActivity extends AppCompatActivity implements ActionBar.TabListener {
+public class RoutePlannerActivity
+        extends AppCompatActivity
+        implements ActionBar.TabListener,
+        NewMapSelection.NewMapSelectionLisstener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -127,4 +132,10 @@ public class RoutePlannerActivity extends AppCompatActivity implements ActionBar
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    // Start the HUD.
+    @Override
+    public void startHud() {
+        Intent intent = new Intent(RoutePlannerActivity.this, HudActivity.class);
+        startActivity(intent);
+    }
 }

@@ -15,33 +15,24 @@
         android:background="@color/red"
         android:layout_gravity="center"
         android:gravity="center"
+        android:id="@+id/goToHud"
+        android:clickable="true"
         />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="0.1"
-        android:inputType="textPostalAddress"
-        android:hint="where do you want to go?"
-        android:layout_gravity="center"
-        android:ems="10"
-        android:id="@+id/editText" />
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="0.1"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:text="save and start"-->
+        <!--android:id="@+id/goToHud"-->
+        <!--android:background="@color/green"/>-->
 
-    <Button
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/mapSelectionLayout"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.05"
-        android:layout_gravity="center"
-        android:text="Download"
-        android:id="@+id/button6"
-        android:background="@color/green"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="0.7"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/map_history_placeholder"/>
+        android:layout_weight="0.9"></FrameLayout>
 
 
 

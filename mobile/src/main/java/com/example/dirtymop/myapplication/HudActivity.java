@@ -47,6 +47,7 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeriesFormatter;
 import com.example.dirtymop.myapplication.classes.AndroidWear;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
+import com.example.dirtymop.myapplication.fragments.NewMapSelection;
 import com.example.dirtymop.myapplication.services.LocationAndSensorService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -67,7 +68,8 @@ import java.util.Map;
 
 public class HudActivity
         extends Activity
-        implements ServiceConnection, OnMapReadyCallback {
+        implements ServiceConnection,
+        OnMapReadyCallback {
 
     TextView latitude, longitude, accuracy, altitude, speed, acceleration;
     private int LOCATION_DISTANCE_REFRESH = 0;  // meters
@@ -498,6 +500,4 @@ public class HudActivity
         stopService(new Intent(HudActivity.this, LocationAndSensorService.class));
 //        service.onDestroy();
     }
-
-
 }

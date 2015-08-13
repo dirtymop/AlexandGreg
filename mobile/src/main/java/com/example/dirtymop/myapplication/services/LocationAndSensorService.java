@@ -118,7 +118,7 @@ public class LocationAndSensorService
         editor.commit();
 
         // Connect to the GoogleApiClient
-        if (locationGoogleApiClient == null) buildGoogleApiClient();
+        buildGoogleApiClient();
         locationGoogleApiClient.connect();
 //        dataGoogleApiClient.connect();
 

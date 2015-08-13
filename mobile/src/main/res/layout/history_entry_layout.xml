@@ -56,7 +56,8 @@
                         android:orientation="vertical"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.25">
+                        android:layout_weight="0.25"
+                        android:gravity="center_vertical|center_horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -77,7 +78,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
-                            android:text="Heartrate:"
+                            android:text="Top Speed:"
                             android:textColor="@color/material_blue_grey_800"/>
 
                         <TextView
@@ -86,6 +87,18 @@
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="Elevation:"
                             android:textColor="@color/material_blue_grey_800"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Date:"
+                            android:textColor="@color/material_blue_grey_800"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Time:"
+                            android:textColor="@color/material_blue_grey_800"/>
                     </LinearLayout>
 
                     <!-- Data values -->
@@ -93,7 +106,8 @@
                         android:orientation="vertical"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.25">
+                        android:layout_weight="0.25"
+                        android:gravity="center_vertical|center_horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -110,13 +124,12 @@
                             android:text="----"
                             android:id="@+id/speedHistoryView"
                             android:textColor="@color/material_blue_grey_800"/>
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="----"
-                            android:id="@+id/heartrateHistoryView"
+                            android:id="@+id/topspeedHistoryView"
                             android:textColor="@color/material_blue_grey_800"/>
 
                         <TextView
@@ -125,6 +138,20 @@
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="----"
                             android:id="@+id/elevationHistoryView"
+                            android:textColor="@color/material_blue_grey_800"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="----"
+                            android:id="@+id/dateHistoryView"
+                            android:textColor="@color/material_blue_grey_800"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="----"
+                            android:id="@+id/timeHistoryView"
                             android:textColor="@color/material_blue_grey_800"/>
                     </LinearLayout>
                 </LinearLayout>

@@ -43,6 +43,13 @@ public class DatabaseHelper {
     private static final String KEY_HISTORY_Elevation="Elevation";
     private static final String KEY_HISTORY_latsandlong="Latsandlong";
     private static final String KEY_HISTORY_TIME="Time";
+    private static final String KEY_HISTORY_DISTANCE="Distance";
+    private static final String KEY_HISTORY_IDENTIFY="Identify";
+    private static final String KEY_HISTORY_MARKERS="Markers";
+    private static final String KEY_HISTORY_TIME_STARTED="Time_started";
+    private static final String KEY_HISTORY_Top_speed="Top_speed";
+
+
 
     //Preferences Entry column names
     private  static final String KEY_PREFERENCES_Units="Units";
@@ -70,6 +77,11 @@ public HistoryTable theHistorytable;
             + KEY_HISTORY_Elevation + " TEXT NOT NULL, "
             + KEY_HISTORY_Date + " TEXT NOT NULL, "
             + KEY_HISTORY_TIME + " TEXT NOT NULL, "
+            + KEY_HISTORY_IDENTIFY + " TEXT NOT NULL, "
+            + KEY_HISTORY_TIME_STARTED + " TEXT NOT NULL, "
+            + KEY_HISTORY_Top_speed + " TEXT NOT NULL, "
+            + KEY_HISTORY_MARKERS+ " TEXT NOT NULL, "
+            + KEY_HISTORY_DISTANCE + " TEXT NOT NULL, "
             + KEY_HISTORY_latsandlong + " TEXT NOT NULL"
             + ");";
 
@@ -137,6 +149,11 @@ public HistoryTable theHistorytable;
                     + KEY_HISTORY_Elevation + ","
                     + KEY_HISTORY_Date + ","
                     + KEY_HISTORY_TIME + ","
+                    + KEY_HISTORY_IDENTIFY + ","
+                    + KEY_HISTORY_TIME_STARTED + ","
+                    + KEY_HISTORY_Top_speed + ","
+                    + KEY_HISTORY_MARKERS + ","
+                    + KEY_HISTORY_DISTANCE + ","
                     + KEY_HISTORY_latsandlong
                     + " )"
                     + " Values ( '" + x.getFacebookID() + "', '"
@@ -145,6 +162,11 @@ public HistoryTable theHistorytable;
                     + x.getElevation() + "', '"
                     + x.getDate() +"', '"
                     + x.getTime() +"', '"
+                    + x.getIdentify() +"', '"
+                    + x.getTime_started() +"', '"
+                    + x.getTop_speed() +"', '"
+                    + x.getMarkers() +"', '"
+                    + x.getDistance() +"', '"
                     + x.getLatsandlong()
                     + "' )";
 
@@ -199,7 +221,7 @@ public HistoryTable theHistorytable;
        ArrayList<HistoryTable> completehistory=new ArrayList<HistoryTable>();
 
 
-        String[] columns = { KEY_ID, KEY_USER, KEY_HISTORY_Avgspeed,KEY_HISTORY_Date,KEY_HISTORY_TIME, KEY_HISTORY_Elevation, KEY_HISTORY_latsandlong};
+        String[] columns = { KEY_ID, KEY_USER, KEY_HISTORY_Avgspeed,KEY_HISTORY_Date,KEY_HISTORY_TIME, KEY_HISTORY_Elevation, KEY_HISTORY_latsandlong, KEY_HISTORY_TIME_STARTED,KEY_HISTORY_IDENTIFY, KEY_HISTORY_DISTANCE,KEY_HISTORY_Top_speed,KEY_HISTORY_MARKERS};
         Cursor c = db.query(TABLE_HISTORY, columns, null, null, null, null, null);
 
         Log.d("db", "cursor count: " + c.getCount());
@@ -214,6 +236,12 @@ public HistoryTable theHistorytable;
             entry.setTime(c.getString(4));
             entry.setElevation(c.getString(5));
             entry.setlatsandlong(c.getString(6));
+            entry.setTime_started(c.getString(7));
+            entry.setIdentify(c.getString(8));
+            entry.setDistance(c.getString(9));
+            entry.setTop_speed(c.getString(10));
+            entry.setMarkers(c.getString(11));
+
 
             Log.d("db_GetHistoryEntry", "[entry]: " + c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2) + ", " + c.getString(3));
            completehistory.add(entry);

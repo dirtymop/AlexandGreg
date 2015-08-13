@@ -95,76 +95,20 @@ public class History extends Fragment {
         entries.setDivider(null);
         entries.setDividerHeight(0);
 
-//pull the data from the local db save into thehistorytable
+        //pull the data from the local db save into thehistorytable
+        DatabaseHelper dbhelper= new DatabaseHelper(getActivity().getApplicationContext());
+        SQLiteDatabase mydb = dbhelper.databaseOpenOrCreate("local.db");
+        dbhelper.createTables(mydb);
+        ArrayList<HistoryTable> thehistorytable=dbhelper.getHistoryEntry(mydb);
+        Log.d("HistoryFragment","Loading from local db");
 
-        DatabaseHelper x= new DatabaseHelper(getActivity().getApplicationContext());
-        SQLiteDatabase mydb = x.databaseOpenOrCreate("local.db");
-        ArrayList<HistoryTable> thehistorytable=x.getHistoryEntry(mydb);
-        Log.d("HistoryFragment","loading from local db");
         // Initialize adapter -- place the thehistorytable into it
         adapter = new HistoryEntryAdapter(getActivity().getApplicationContext(), thehistorytable);
         entries.setAdapter(adapter);
-        Log.d("HistoryFragment", "job is in the hands of the adapter");
+        Log.d("HistoryFragment", "The Job is in the hands of the adapter");
+
         // Return the view.
         return view;
-
-
-
-
-/*
-        // Dummy entries
-        ArrayList<HistoryEntry> temp = new ArrayList<HistoryEntry>();
-        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
-        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
-        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
-        temp.add(new HistoryEntry("map", 0, 0, 0, 0, 0, 0));
-
-*/
-      /* ArrayList<HistoryTable> temp1 = new ArrayList<HistoryTable>();
-
-        HistoryTable newHistorytable= new HistoryTable();
-       newHistorytable.setAvgspeed("1234567890");
-        newHistorytable.setFacebookID("1234567890");
-        newHistorytable.setTime("1234567890");
-        newHistorytable.setElevation("1234567890");
-        newHistorytable.setCustomerName("1234567890");
-        newHistorytable.setDate("1234567890");
-        newHistorytable.setlatsandlong("1234567890");
-
-        HistoryTable newHistorytable1=new HistoryTable();
-        newHistorytable1.setAvgspeed("bob");
-        newHistorytable1.setFacebookID("bob");
-        newHistorytable1.setTime("12");
-        newHistorytable1.setElevation("13");
-        newHistorytable1.setCustomerName("14");
-        newHistorytable1.setDate("15");
-        newHistorytable1.setlatsandlong("16");
-
-Log.d("listviewtest", newHistorytable.getFacebookID());
-        temp1.add(newHistorytable);
-        temp1.add(newHistorytable1);
-
-        ContactsTable contact1=new ContactsTable();
-        contact1.setFacebookID("1234567890");
-        contact1.setName("1234567890");
-        contact1.setEmail("1234567890");
-        contact1.setCustomerName("1234567890");
-        contact1.setNumber("1234567890");
-
-        PreferencesTable preftable=new PreferencesTable();
-        preftable.setFacebookID("1234567890");
-        preftable.setCustomerName("1234567890");
-        preftable.setUnits("1234567890");
-
-
-
-   //    x.insertHistoryEntry(mydb, newHistorytable);
-     //   x.Savetothecloud(temp1, contact1, preftable);
-
-
-*/
-
-
     }
 
 
@@ -184,6 +128,8 @@ Log.d("listviewtest", newHistorytable.getFacebookID());
         super.onDetach();
         listener = null;
     }
+
+
 
 
     private class Loadahistoryentry extends AsyncTask<Integer, Integer, Integer>

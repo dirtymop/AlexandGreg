@@ -48,6 +48,7 @@ import com.androidplot.xy.XYSeriesFormatter;
 import com.example.dirtymop.myapplication.classes.AndroidWear;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.fragments.NewMapSelection;
+import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.services.LocationAndSensorService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -62,6 +63,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -135,6 +137,26 @@ public class HudActivity
 
         // Set view.
         setContentView(R.layout.activity_hud);
+
+
+        //testing history view ----------------------------------------------
+      /* DatabaseHelper x= new DatabaseHelper(this);
+        SQLiteDatabase mydb = x.databaseOpenOrCreate("local.db");
+        x.createTables(mydb);
+        //ArrayList<HistoryTable> thehistorytable=x.getHistoryEntry(mydb);
+        HistoryTable newHistorytable= new HistoryTable();
+        newHistorytable.setAvgspeed("fred");
+        newHistorytable.setFacebookID("fred");
+        newHistorytable.setTime("zoro");
+        newHistorytable.setElevation("lots");
+        newHistorytable.setCustomerName("1234567890");
+        newHistorytable.setDate("yo");
+        newHistorytable.setlatsandlong("1234567890");
+
+
+        x.insertHistoryEntry(mydb,newHistorytable);
+        */
+        //-------------------------------------------------------------------
 
         // Create service
         IntentFilter intentFilter = new IntentFilter("toActivity");

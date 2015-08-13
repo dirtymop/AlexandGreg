@@ -44,16 +44,27 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
         dbHelper.createTables(db);
+
         dbHelper.insertHistoryEntry(db, new HistoryTable(
-                "1111",
-                "1111",
-                "1111",
-                "1111",
-                "1111",
-                "1111",
-                "1111"
+                "Facebookid1",
+                "CustomerName1",
+                "latslong1",
+                "date1",
+                "time1",
+                "elevation1",
+                "avgspeed1",
+                "distance1",
+                "identify1",
+                "markers1",
+                "timestarted1",
+                "topspeed1"
         ));
         dbHelper.insertHistoryEntry(db, new HistoryTable(
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
                 "2222",
                 "2222",
                 "2222",
@@ -62,6 +73,7 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
                 "2222",
                 "2222"
         ));
+
 
         // Initialize the fragment manager.
         fm = getFragmentManager();
@@ -90,7 +102,7 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
         // Add database entries to the history fragment adapter
         for (HistoryTable entry : dbHelper.getHistoryEntry(db)) {
             Log.d("home", "[entry]: " + entry.getFacebookID());
-//            history.addHistoryEntry(entry);
+    //        history.addHistoryEntry(entry);
         }
     }
 

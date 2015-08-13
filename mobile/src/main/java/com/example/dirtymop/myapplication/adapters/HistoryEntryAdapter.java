@@ -52,12 +52,20 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
         final View row = inflater.inflate(R.layout.history_entry_layout, parent, false);
 
         /* ACCESS ALL VIEW ELEMENTS HERE AND AFTERWARD */
+
         TextView distance = (TextView) row.findViewById(R.id.distanceHistoryView);
         TextView speed = (TextView) row.findViewById(R.id.speedHistoryView);
         TextView elevation =(TextView) row.findViewById(R.id.elevationHistoryView);
-        TextView time =(TextView) row.findViewById(R.id.heartrateHistoryView);
-        distance.setText("1 metric");
-        speed.setText( "speak");
+        TextView topspeed =(TextView) row.findViewById(R.id.topspeedHistoryView);
+        TextView date= (TextView) row.findViewById(R.id.dateHistoryView);
+        TextView time= (TextView) row.findViewById(R.id.timeHistoryView);
+
+
+        topspeed.setText(entries.get(position).getTop_speed());
+        date.setText(entries.get(position).getDate());
+        time.setText(entries.get(position).getTime());
+        distance.setText(entries.get(position).getDistance());
+        speed.setText(entries.get(position).getAvgspeed());
         elevation.setText(entries.get(position).getElevation());
 
         Log.d("listviewtest", entries.get(position).getFacebookID() + "inside adapter");

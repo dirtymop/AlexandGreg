@@ -497,6 +497,7 @@ public class HudActivity
     public void cleanup() {
 //        mapFragment.onDestroy();
         bound = false;
+        unregisterReceiver(activityReceiver);
         stopService(new Intent(HudActivity.this, LocationAndSensorService.class));
 //        service.onDestroy();
     }

@@ -99,8 +99,8 @@ public class StoredMapSelection extends Fragment {
         // --> set all items in a loop.
 
         entries = new ArrayList<HistoryTable>();
-        entries.add(new HistoryTable("alex","1","1","1","1","1","1"));
-        entries.add(new HistoryTable("greg","2","2","2","2","2","2"));
+        entries.add(new HistoryTable("alex","1","1","1","1","1","1", "1", "1", "1", "1", "1"));
+        entries.add(new HistoryTable("greg","2","2","2","2","2","2", "2", "2", "2", "2", "2"));
 
         // Initialize the adapter
         if (entries.size() != 0)

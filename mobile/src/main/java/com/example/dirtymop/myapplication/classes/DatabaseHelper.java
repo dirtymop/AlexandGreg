@@ -11,6 +11,7 @@ import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
@@ -91,7 +92,29 @@ public HistoryTable theHistorytable;
         // Set the context.
         this.context = context;
     }
+    public ArrayList<LatLng> getlatlong(String latlongresults)
+    {
+        ArrayList<LatLng> locations=new ArrayList<>();
+        String parts[] = latlongresults.split(";");
+        int I=0;
+        if (parts != null)
+        {
+            while(I<=parts.length)
+            {
+                String latandlong[]= parts[I].split(",");
+                String lat=latandlong[0];
+                String lng=latandlong[1];
+                Double latdouble=Double.parseDouble(lat);
+                Double lngdouble=Double.parseDouble(lng);
+                LatLng latlongtoadd= new LatLng(latdouble,lngdouble);
+                locations.add(I,latlongtoadd);
+                I++;
 
+            }
+        }
+
+        return locations;
+    }
     // Create the database
     public SQLiteDatabase databaseOpenOrCreate(String filename) {
         return this.context.openOrCreateDatabase(filename, this.context.MODE_PRIVATE, null);
@@ -111,22 +134,25 @@ public HistoryTable theHistorytable;
     * LOCAL DB: Insertion methods
     *
     * */
-    public void insertContact(SQLiteDatabase db, Contact contact, String user)
+    public void insertContact(SQLiteDatabase db, ContactsTable contact)
     {
         try {
             // Query to insert a new contact to the database.
             String insertQuery = "INSERT INTO "
                     + TABLE_CONTACTS
                     + " ( "
+                    + KEY_ID + ","
                     + KEY_USER + ","
                     + KEY_CONTACTS_NAME + ","
                     + KEY_CONTACTS_NUMBER + ","
                     + KEY_CONTACTS_EMAIL
                     + " )"
-                    + " Values ( '" + user + "', '"
-                    + contact.name + "', '"
-                    + contact.number + "', '"
-                    + contact.email
+                    + " Values ( '"
+                    + contact.getFacebookID() + "', '"
+                    + contact.getCustomerName() + "', '"
+                    + contact.getName() + "', '"
+                    + contact.getNumber() + "', '"
+                    + contact.getEmail()
                     + "' )";
 
             // Run the SQL command.

@@ -58,6 +58,8 @@ public class LocationAndSensorService
     private long LOCATION_INTERVAL = 500; // milliseconds
     private Bundle locationBundle;
     private volatile boolean isBuilt = false;
+    private Location lastLocation = null;
+    private float totalDistance = 0;
 
     /*
     * Sensor member variables
@@ -231,9 +233,17 @@ public class LocationAndSensorService
         locationBundle = new Bundle();
         locationBundle.putDouble("latitude", location.getLatitude());
         locationBundle.putDouble("longitude", location.getLongitude());
-        locationBundle.putFloat("accuracy", location.getAccuracy());
-        locationBundle.putDouble("altitude", location.getAltitude());
+//        locationBundle.putFloat("accuracy", location.getAccuracy());
+//        locationBundle.putDouble("altitude", location.getAltitude());)
         locationBundle.putFloat("speed", location.getSpeed());
+
+        // Update total distance.
+        if (lastLocation != null)
+            totalDistance = totalDistance + lastLocation.distanceTo(location);
+
+        // Put the total distance into the bundle.
+        locationBundle.putFloat("distance", totalDistance);
+        lastLocation = location;
 
         // Print location to the log.
         Log.d("service", locationBundle.toString());

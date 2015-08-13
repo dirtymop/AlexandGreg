@@ -15,6 +15,9 @@ import android.widget.ListView;
 
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.adapters.StoredRouteAdapter;
+import com.example.dirtymop.myapplication.classes.HistoryTable;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,10 +35,13 @@ public class StoredMapSelection extends Fragment {
     private String mParam2;
 
     // List view
-    private ListView entries;
+    private ListView entriesListView;
 
     // List adapter
     private StoredRouteAdapter adapter;
+
+    // Elements to be loaded
+    ArrayList<HistoryTable> entries;
 
 
     /**
@@ -76,13 +82,24 @@ public class StoredMapSelection extends Fragment {
         View view = inflater.inflate(R.layout.fragment_stored_map_selection, container, false);
 
         // Initialize the ListView
-        entries = (ListView) view.findViewById(R.id.storageList);
+        entriesListView = (ListView) view.findViewById(R.id.storageList);
+
+        // TODO: Populate the entries array list with all stored items
+        // --> pull from local server.
+        // --> set all items in a loop.
+
+        entries = new ArrayList<HistoryTable>();
+        entries.add(new HistoryTable("alex","1","1","1","1","1","1"));
+        entries.add(new HistoryTable("greg","2","2","2","2","2","2"));
 
         // Initialize the adapter
-        adapter = new StoredRouteAdapter(getActivity().getApplicationContext());
+        if (entries.size() != 0)
+            adapter = new StoredRouteAdapter(getActivity().getApplicationContext(), entries);
+        else
+            adapter = new StoredRouteAdapter(getActivity().getApplicationContext());
 
         // Set the adapter for the ListView
-        entries.setAdapter(adapter);
+        entriesListView.setAdapter(adapter);
 
         // Retun the inflated view
         return view;

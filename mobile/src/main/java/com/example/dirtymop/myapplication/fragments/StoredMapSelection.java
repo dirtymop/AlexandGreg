@@ -25,7 +25,6 @@ import com.example.dirtymop.myapplication.adapters.HistoryEntryAdapter;
 import com.example.dirtymop.myapplication.classes.ContactsTable;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
-import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
 import java.util.ArrayList;
 
@@ -58,7 +57,6 @@ public class StoredMapSelection extends Fragment {
 
     private android.app.FragmentManager fm;
 
-    private History history;
     private Button selectMapButton;
 
     // SQLite database

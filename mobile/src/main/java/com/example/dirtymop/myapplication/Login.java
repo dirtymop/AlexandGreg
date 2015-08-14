@@ -76,7 +76,7 @@ public class Login extends ActionBarActivity {
 
 
 
-                Intent intent = new Intent(Login.this, MainActivity.class);
+                Intent intent = new Intent(Login.this, RoutePlannerActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -122,7 +122,7 @@ public class Login extends ActionBarActivity {
             public void onSuccess(LoginResult loginResult) {
 
                 Log.d("tag1", "onSuccess");
-                Intent intent = new Intent(Login.this, HomeActivity.class);
+                Intent intent = new Intent(Login.this, RoutePlannerActivity.class);
                 startActivity(intent);
                 finish();
 

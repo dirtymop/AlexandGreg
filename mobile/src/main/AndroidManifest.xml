@@ -55,24 +55,7 @@
 
         <!-- Main Activitiy -->
 
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
-
-        </activity>
-
         <!-- Home -->
-        <activity
-            android:name=".HomeActivity"
-            android:label="@string/title_activity_home" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-
-        </activity>
 
         <!-- Settings -->
         <activity
@@ -85,14 +68,17 @@
         <activity
             android:name=".RoutePlannerActivity"
             android:label="@string/title_activity_route_planner" >
+
+            <intent-filter>
+                <action android:name="ANDROID.INTENT.ACTION.MAIN" />
+                <category android:name="ANDROID.INTENT.CATEGORY.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <!-- HUD -->
         <activity
             android:name=".HudActivity"
             android:label="@string/title_activity_hud" >
-
-
         </activity>
 
         <!-- Login -->

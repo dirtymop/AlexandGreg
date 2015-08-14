@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
-import com.example.dirtymop.myapplication.fragments.History;
 
 //import com.example.dirtymop.myapplication.fragments.StartMini;
 import com.example.dirtymop.myapplication.fragments.settings;

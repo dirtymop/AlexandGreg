@@ -33,17 +33,14 @@ import com.example.dirtymop.myapplication.classes.ContactsTable;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.EntryExpansionFragment;
-import com.example.dirtymop.myapplication.fragments.History;
 import com.example.dirtymop.myapplication.fragments.NewMapSelection;
 import com.example.dirtymop.myapplication.fragments.RetainedFragment;
 import com.example.dirtymop.myapplication.fragments.StoredMapSelection;
 import com.google.android.gms.maps.model.LatLng;
-import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
 public class RoutePlannerActivity
         extends AppCompatActivity
         implements ActionBar.TabListener,
-        HistoryInteractionListener,
         NewMapSelection.NewMapSelectionLisstener,
         EntryExpansionFragment.OnFragmentInteractionListener
         {
@@ -97,6 +94,10 @@ public class RoutePlannerActivity
             android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.add(retainedFragment,TAG_FRAG_RETAINED);
             fragmentTransaction.commit();
+        }
+        if (savedInstanceState != null) {
+            //Every time during the recreate of the activity, the retainedFragment will be lost, so we need to reassign the retainedFragment
+            retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag(TAG_FRAG_RETAINED);
         }
 
         // Create the adapter that will return a fragment for each of the three

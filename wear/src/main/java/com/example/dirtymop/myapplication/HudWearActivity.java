@@ -348,17 +348,18 @@ public class HudWearActivity
             // Determine which sensor triggered the event listener
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 // Send data to phone
-                if (count == 10) {
+                if (count == 5) {
                     count = 0;
-                    Log.d("hudwear", "send accel data to mobile..."
-                                    + "\nx-axis: " + event.values[0]
-                                    + "\ny-axis: " + event.values[1]
-                                    + "\nz-axis: " + event.values[2]
-                    );
-                    Log.d("hudwear", "starting new task.");
+//                    Log.d("hudwear", "send accel data to mobile..."
+//                                    + "\nx-axis: " + event.values[0]
+//                                    + "\ny-axis: " + event.values[1]
+//                                    + "\nz-axis: " + event.values[2]
+//                    );
+//                    Log.d("hudwear", "starting new task.");
 
                     if (connected)
-                        new DataTask().execute(new Float[]{event.values[0], event.values[1], event.values[2]});
+                        Log.d("atest", "values: " + event.values[0] + ", " + event.values[1] + ", " + event.values[2]);
+//                        new DataTask().execute(new Float[]{event.values[0], event.values[1], event.values[2]});
                 }
                 else count++;
             }

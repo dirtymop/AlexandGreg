@@ -6,18 +6,49 @@
     android:weightSum="1">
 
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.1"
-        android:text="Create a new route..."
-        android:textColor="@color/lightgray"
-        android:background="@color/red"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:id="@+id/goToHud"
-        android:clickable="true"
-        />
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3333"
+            android:text="Store your route..."
+            android:textColor="@color/lightgray"
+            android:background="@color/green"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:id="@+id/saveRoute"
+            android:clickable="true" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3333"
+            android:text="Start Fresh"
+            android:textColor="@color/lightgray"
+            android:background="@color/orange"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:id="@+id/clearRoute"
+            android:clickable="true" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.335"
+            android:text="Load to HUD..."
+            android:textColor="@color/lightgray"
+            android:background="@color/red"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:id="@+id/goToHud"
+            android:clickable="true" />
+    </LinearLayout>
 
     <!--<Button-->
         <!--android:layout_width="wrap_content"-->
@@ -28,11 +59,44 @@
         <!--android:id="@+id/goToHud"-->
         <!--android:background="@color/green"/>-->
 
-    <FrameLayout
-        android:id="@+id/mapSelectionLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.9"></FrameLayout>
+        android:layout_weight="0.9">
+
+        <FrameLayout
+            android:id="@+id/mapSelectionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"></FrameLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_bg_shadow"
+            android:layout_gravity="center_horizontal|top"
+            android:id="@+id/markerContentLayout"
+            android:weightSum="1">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="wrap_content"
+                android:hint="say anything you like :D"
+                android:id="@+id/markerMessage" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"
+                android:background="@color/blue"
+                android:textColor="@color/lightgray"
+                android:text="save"
+                android:gravity="center"
+                android:id="@+id/saveButton" />
+        </LinearLayout>
+    </RelativeLayout>
 
 
 

@@ -3,6 +3,7 @@ package com.example.dirtymop.myapplication.fragments;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 //import android.app.Fragment;
@@ -10,7 +11,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.RoutePlannerActivity;
@@ -20,6 +25,13 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +40,8 @@ import com.google.android.gms.maps.SupportMapFragment;
  */
 public class NewMapSelection
         extends Fragment
-        implements OnMapReadyCallback {
+        implements OnMapReadyCallback,
+        GoogleMap.OnMapLongClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -42,11 +55,15 @@ public class NewMapSelection
     private NewMapSelectionLisstener listener;
 
     // Layout Items
-    private TextView goToHud;
+    private TextView goToHud, saveRoute, clearRoute, saveButton;
+    private EditText markerMessage;
+    private LinearLayout markerContentLayout;
 
     // Google Maps
     private SupportMapFragment mapFragment;
     private GoogleMap googleMap;
+    private HashMap<LatLng, String> markers;
+    private Marker currentMarker;
     private static final String TAG_FRAG_MAP = "map_fragment";
 
 
@@ -81,8 +98,16 @@ public class NewMapSelection
         }
     }
 
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        markerContentLayout.setVisibility(View.VISIBLE);
+
+        markerOnLocation(latLng, "...");
+    }
+
     public interface NewMapSelectionLisstener {
         public void startHud();
+        public void storeMarkers(HashMap<LatLng, String> markers);
     }
 
     @Override
@@ -107,14 +132,66 @@ public class NewMapSelection
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_map_selection, container, false);
 
+        // Markers HashMap
+        markers = new HashMap<LatLng, String>();
+
+        // Button directing to the hud.
         goToHud = (TextView) view.findViewById(R.id.goToHud);
         goToHud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Load markers to retained fragment on HUD launch.
+                listener.storeMarkers(markers);
+
+                // Start the HUD.
                 listener.startHud();
             }
         });
 
+        // Button saves all route content loaded on the screen.
+        saveRoute = (TextView) view.findViewById(R.id.saveRoute);
+        saveRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Load markers to retained fragment on HUD launch.
+                listener.storeMarkers(markers);
+
+                Toast.makeText(getActivity().getApplicationContext(), "Your map has been saved with " + markers.size() + " markers.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Button saves all route content loaded on the screen.
+        clearRoute = (TextView) view.findViewById(R.id.clearRoute);
+        clearRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Delete all markers
+                flush();
+
+                Toast.makeText(getActivity().getApplicationContext(), "Map is cleared.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        markerContentLayout = (LinearLayout) view.findViewById(R.id.markerContentLayout);
+        markerContentLayout.setVisibility(View.GONE);
+
+        markerMessage = (EditText) view.findViewById(R.id.markerMessage);
+        saveButton = (TextView) view.findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // save the text to the marker
+                currentMarker.setTitle(markerMessage.getText().toString());
+                currentMarker.showInfoWindow();
+
+                // Save marker to the hashmap.
+                markers.put(currentMarker.getPosition(), currentMarker.getTitle());
+
+                // Clear the view.
+                markerMessage.setText("");
+                markerContentLayout.setVisibility(View.GONE);
+            }
+        });
 
         // Initialize the Map fragment.
         initMap();
@@ -122,6 +199,12 @@ public class NewMapSelection
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    // Clears all map elements.
+    private void flush() {
+        googleMap.clear();
+        markers.clear();
     }
 
 
@@ -132,6 +215,8 @@ public class NewMapSelection
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        this.googleMap.setOnMapLongClickListener(this);
+        this.googleMap.setMyLocationEnabled(true);
     }
 
     // Initialize the Google Maps fragment.
@@ -158,6 +243,16 @@ public class NewMapSelection
 
         // Populate the map frame with the map fragment.
         fm.beginTransaction().add(R.id.mapSelectionLayout, mapFragment).commit();
+    }
+
+    // Place a marker on location.
+    private void markerOnLocation(LatLng loc, String message) {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(loc)
+                .visible(true)
+                .title(message);
+        currentMarker = googleMap.addMarker(markerOptions);
+        currentMarker.showInfoWindow();
     }
 
     // Assign a callback for Google Maps.

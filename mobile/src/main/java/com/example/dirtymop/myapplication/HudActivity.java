@@ -375,13 +375,19 @@ public class HudActivity
     }
 
     public boolean isOverThreshold(double[] mobile, double[] wear) {
-        if ((mobile[0] > 11.0 || mobile[1] > 11.0 || mobile[2] > 11.0) && (wear[0] > 11.0 || wear[1] > 11.0 || wear[2] > 11.0))
+        Log.d("emergency", "\nmobile:"
+            + mobile[0] + "," + mobile[1] + "," + mobile[2]);
+        Log.d("emergency", "\nwear:"
+            + wear[0] + "," + wear[1] + "," + wear[2]);
+        if ((Math.abs(mobile[0]) > 8.0 || Math.abs(mobile[1]) > 8.0 || Math.abs(mobile[2]) > 8.0) && (Math.abs(wear[0]) > 8.0 || Math.abs(wear[1]) > 8.0 || Math.abs(wear[2]) > 8.0))
+        {
+            Log.d("emergency", "threshold reached!");
             return true;
+        }
 //        if ((mobile[0] > 29.0 || mobile[1] > 29.0 || mobile[2] > 29.0))
 //            return true;
         else return false;
     }
-
     public void updateAccelerometer(String type, Bundle data) {
 
         // Set the current values

@@ -45,18 +45,30 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
 
-
+        // Pulls EContact from where it is in settings and saves it---------------------------------
 
         ContactsTable EMS = new ContactsTable();
-        EMS.setFacebookID("thefullbic");
-        EMS.setCustomerName("GG");
-        EMS.setName(sharedPrefs.getString("nameofcontact", "NULL"));
-        EMS.setNumber(sharedPrefs.getString("numberofcontact", "NULL"));
-        EMS.setEmail(sharedPrefs.getString("emailofcontact", "NULL"));
+        EMS.setFacebookID("placeholder");
+        EMS.setCustomerName("placeholder");
+        EMS.setName(sharedPrefs.getString("nameofcontact", "Greg"));
+        EMS.setNumber(sharedPrefs.getString("numberofcontact", "5404245176"));
+        EMS.setEmail(sharedPrefs.getString("emailofcontact", "gdl@vt.edu"));
+
+        // true or false settings check box
+         Boolean watchison=sharedPrefs.getBoolean("watchonoroff",false);
+
+        //loads into local db
         DatabaseHelper dbhelper= new DatabaseHelper(this.getApplicationContext());
         SQLiteDatabase mydb = dbhelper.databaseOpenOrCreate("local.db");
         dbhelper.createTables(mydb);
         dbhelper.insertContact(mydb,EMS);
+
+        //------------------------------------------------------------------------------------------
+
+
+
+
+
 
         // SQLite
         dbHelper = new DatabaseHelper(this);

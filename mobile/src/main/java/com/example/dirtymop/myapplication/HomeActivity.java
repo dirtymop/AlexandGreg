@@ -42,11 +42,10 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
+
 
         // Pulls EContact from where it is in settings and saves it---------------------------------
-
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         ContactsTable EMS = new ContactsTable();
         EMS.setFacebookID("placeholder");
         EMS.setCustomerName("placeholder");

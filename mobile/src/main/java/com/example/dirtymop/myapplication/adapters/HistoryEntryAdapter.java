@@ -14,6 +14,7 @@ import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.classes.HistoryEntry;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.History;
+import com.example.dirtymop.myapplication.fragments.StoredMapSelection;
 
 import org.w3c.dom.Text;
 
@@ -24,22 +25,25 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
 
     private final Context context;
     private final ArrayList<HistoryTable> entries;
-
+    private final StoredMapSelection fragment;
     // Constructor
-    public HistoryEntryAdapter(Context context, ArrayList<HistoryTable> entries) {
+    public HistoryEntryAdapter(StoredMapSelection fragment, Context context) {
+        super(context, R.layout.stored_route_entry_layout);
+
+        this.context = context;
+        this.entries = null;
+        this.fragment = fragment;
+    }
+    public HistoryEntryAdapter(StoredMapSelection fragment,Context context, ArrayList<HistoryTable> entries) {
         super(context, R.layout.history_entry_layout, entries);
 
         // Initialize object attributes
         this.context = context;
         this.entries = entries;
+        this.fragment = fragment;
         Log.d("listviewtest", "inside constructer");
     }
 
-    @Override
-    public void onClick(View v) {
-        // Open up history view layout
-        // Show details on specific entry
-    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -68,6 +72,9 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
         speed.setText(entries.get(position).getAvgspeed());
         elevation.setText(entries.get(position).getElevation());
 
+        row.setTag(new String[]{((Integer) position).toString()});
+        row.setOnClickListener(this);
+
         Log.d("listviewtest", entries.get(position).getFacebookID() + "inside adapter");
 
 
@@ -75,10 +82,20 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
         // Link XML items to Java objects
       //  ProgressBar historyProgress = (ProgressBar) row.findViewById(R.id.historyProgress);
       //  historyProgress.setVisibility(View.VISIBLE); // Set progress bar to visible
-
         return row;
     }
 
+    @Override
+    public void onClick(View view) {
+        // Load the entry expansion fragment
+
+        // this is the index of the entry to be saved
+        int indexInAdapter = Integer.parseInt(((String[]) view.getTag())[0]);
+        Log.d("adapter", "item clicked: " + indexInAdapter);
+
+        // get the item and pass to the activity
+        this.fragment.loadExpansion(entries.get(indexInAdapter).getFacebookID()); // NEEDS UNIQUE_ID
+    }
     @Override
     public void add(HistoryTable object) {
         super.add(object);

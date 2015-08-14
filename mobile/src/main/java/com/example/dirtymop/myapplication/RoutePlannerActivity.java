@@ -3,8 +3,11 @@ package com.example.dirtymop.myapplication;
 import java.util.Locale;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -20,18 +23,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.adapters.SectionsPagerAdapter;
+import com.example.dirtymop.myapplication.classes.ContactsTable;
+import com.example.dirtymop.myapplication.classes.DatabaseHelper;
+import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.EntryExpansionFragment;
+import com.example.dirtymop.myapplication.fragments.History;
 import com.example.dirtymop.myapplication.fragments.NewMapSelection;
 import com.example.dirtymop.myapplication.fragments.StoredMapSelection;
+import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
 public class RoutePlannerActivity
         extends AppCompatActivity
+
         implements ActionBar.TabListener,
+        HistoryInteractionListener,
         NewMapSelection.NewMapSelectionLisstener,
-        EntryExpansionFragment.OnFragmentInteractionListener {
+        EntryExpansionFragment.OnFragmentInteractionListener
+        {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -41,6 +54,9 @@ public class RoutePlannerActivity
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
+
+
+
     SectionsPagerAdapter mSectionsPagerAdapter;
 
     String[] tabs;
@@ -85,6 +101,9 @@ public class RoutePlannerActivity
             }
         });
 
+
+
+
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             // Create a tab with text corresponding to the page title defined by
@@ -96,6 +115,13 @@ public class RoutePlannerActivity
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+
+
+
+
+
+
     }
 
 

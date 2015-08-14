@@ -105,8 +105,8 @@ public class History extends Fragment {
         Log.d("HistoryFragment","Loading from local db");
 
         // Initialize adapter -- place the thehistorytable into it
-        adapter = new HistoryEntryAdapter(getActivity().getApplicationContext(), thehistorytable);
-        entries.setAdapter(adapter);
+//        adapter = new HistoryEntryAdapter();
+//        entries.setAdapter(adapter);
         Log.d("HistoryFragment", "The Job is in the hands of the adapter");
 
         // Return the view.

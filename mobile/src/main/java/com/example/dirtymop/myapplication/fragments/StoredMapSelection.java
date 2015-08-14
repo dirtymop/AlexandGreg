@@ -4,21 +4,26 @@ package com.example.dirtymop.myapplication.fragments;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 //import android.app.Fragment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.example.dirtymop.myapplication.R;
-import com.example.dirtymop.myapplication.adapters.StoredRouteAdapter;
+import com.example.dirtymop.myapplication.adapters.HistoryEntryAdapter;
+import com.example.dirtymop.myapplication.classes.ContactsTable;
+import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
@@ -44,11 +49,22 @@ public class StoredMapSelection extends Fragment {
     private FrameLayout expansionFrame;
 
     // List adapter
-    private StoredRouteAdapter adapter;
+    private HistoryEntryAdapter adapter;
 
     // Elements to be loaded
     ArrayList<HistoryTable> entries;
 
+    private static final String TAG_FRAG_HISTORY = "history_fragment";
+
+    private android.app.FragmentManager fm;
+
+    private History history;
+    private Button selectMapButton;
+
+    // SQLite database
+    private SQLiteDatabase db;
+    private DatabaseHelper dbHelper;
+    private static final String DB_FILENAME = "local.db";
 
     /**
      * Use this factory method to create a new instance of
@@ -98,15 +114,80 @@ public class StoredMapSelection extends Fragment {
         // --> pull from local server.
         // --> set all items in a loop.
 
+
+        // Pulls EContact from where it is in settings and saves it---------------------------------
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity().getApplicationContext());
+        ContactsTable EMS = new ContactsTable();
+        EMS.setFacebookID("placeholder");
+        EMS.setCustomerName("placeholder");
+        EMS.setName(sharedPrefs.getString("nameofcontact", "Greg"));
+        EMS.setNumber(sharedPrefs.getString("numberofcontact", "5404245176"));
+        EMS.setEmail(sharedPrefs.getString("emailofcontact", "gdl@vt.edu"));
+
+        // true or false settings check box
+        Boolean watchison=sharedPrefs.getBoolean("watchonoroff",false);
+
+        //loads into local db
+        DatabaseHelper dbhelper= new DatabaseHelper(this.getActivity().getApplicationContext());
+        SQLiteDatabase mydb = dbhelper.databaseOpenOrCreate("local.db");
+        dbhelper.createTables(mydb);
+        dbhelper.insertContact(mydb,EMS);
+
+        //------------------------------------------------------------------------------------------
+
+
+
+
+
+
+        // SQLite
+        dbHelper = new DatabaseHelper(this.getActivity().getApplicationContext());
+        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+        dbHelper.createTables(db);
+
+        dbHelper.insertHistoryEntry(db, new HistoryTable(
+                "Facebookid1",
+                "CustomerName1",
+                "latslong1",
+                "date1",
+                "time1",
+                "elevation1",
+                "avgspeed1",
+                "distance1",
+                "identify1",
+                "markers1",
+                "timestarted1",
+                "topspeed1"
+        ));
+        dbHelper.insertHistoryEntry(db, new HistoryTable(
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222",
+                "2222"
+        ));
+
+
         entries = new ArrayList<HistoryTable>();
-        entries.add(new HistoryTable("alex","1","1","1","1","1","1", "1", "1", "1", "1", "1"));
-        entries.add(new HistoryTable("greg","2","2","2","2","2","2", "2", "2", "2", "2", "2"));
+        entries=dbHelper.getHistoryEntry(db);
+        //entries.add(new HistoryTable("alex","1","1","1","1","1","1", "1", "1", "1", "1", "1"));
+        ///entries.add(new HistoryTable("greg","2","2","2","2","2","2", "2", "2", "2", "2", "2"));
+
+
+
 
         // Initialize the adapter
         if (entries.size() != 0)
-            adapter = new StoredRouteAdapter(this, getActivity().getApplicationContext(), entries);
+            adapter = new HistoryEntryAdapter(this,getActivity().getApplicationContext(), entries);
         else
-            adapter = new StoredRouteAdapter(this, getActivity().getApplicationContext());
+            adapter = new HistoryEntryAdapter(this,getActivity().getApplicationContext());
 
         // Set the adapter for the ListView
         entriesListView.setAdapter(adapter);

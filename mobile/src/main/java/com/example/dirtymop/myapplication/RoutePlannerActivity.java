@@ -1,5 +1,6 @@
 package com.example.dirtymop.myapplication;
 
+import java.util.HashMap;
 import java.util.Locale;
 
 import android.content.Intent;
@@ -34,12 +35,13 @@ import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.EntryExpansionFragment;
 import com.example.dirtymop.myapplication.fragments.History;
 import com.example.dirtymop.myapplication.fragments.NewMapSelection;
+import com.example.dirtymop.myapplication.fragments.RetainedFragment;
 import com.example.dirtymop.myapplication.fragments.StoredMapSelection;
+import com.google.android.gms.maps.model.LatLng;
 import com.example.dirtymop.myapplication.interfaces.HistoryInteractionListener;
 
 public class RoutePlannerActivity
         extends AppCompatActivity
-
         implements ActionBar.TabListener,
         HistoryInteractionListener,
         NewMapSelection.NewMapSelectionLisstener,
@@ -66,6 +68,16 @@ public class RoutePlannerActivity
      */
     ViewPager mViewPager;
 
+    /*
+    * Tags and Flags
+    * */
+    private static final String TAG_FRAG_RETAINED = "RetainedFragment";
+
+    /*
+    * Fragments
+    * */
+    RetainedFragment retainedFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +90,14 @@ public class RoutePlannerActivity
 
         // Initialize names of all the tabs.
         tabs = new String[] {"Your Routes", "Create New"};
+
+        // Load the retained fragment onCreate.
+        if (getFragmentManager().findFragmentByTag(TAG_FRAG_RETAINED) == null) {
+            retainedFragment = new RetainedFragment();
+            android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.add(retainedFragment,TAG_FRAG_RETAINED);
+            fragmentTransaction.commit();
+        }
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -115,13 +135,6 @@ public class RoutePlannerActivity
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
-
-
-
-
-
-
-
     }
 
 
@@ -164,11 +177,20 @@ public class RoutePlannerActivity
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    /*
+    * NewMapSelection Interface Methods
+    * */
     // Start the HUD.
     @Override
     public void startHud() {
         Intent intent = new Intent(RoutePlannerActivity.this, HudActivity.class);
         startActivity(intent);
+    }
+
+    // Push markers to the retained fragment for storage.
+    @Override
+    public void storeMarkers(HashMap<LatLng, String> markers) {
+        retainedFragment.updateMarkers(markers);
     }
 
     @Override

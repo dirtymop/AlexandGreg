@@ -54,6 +54,9 @@ public class HomeActivity extends Activity implements HistoryInteractionListener
         EMS.setNumber(sharedPrefs.getString("numberofcontact", "5404245176"));
         EMS.setEmail(sharedPrefs.getString("emailofcontact", "gdl@vt.edu"));
 
+        // true or false settings check box
+         Boolean watchison=sharedPrefs.getBoolean("watchonoroff",false);
+
         //loads into local db
         DatabaseHelper dbhelper= new DatabaseHelper(this.getApplicationContext());
         SQLiteDatabase mydb = dbhelper.databaseOpenOrCreate("local.db");

@@ -20,13 +20,10 @@
                     android:title="Email"
                     android:summary="Enter the Email of the Emergency Contact"/>
             </PreferenceCategory>
-    <PreferenceCategory android:title="Watch">
-                <CheckBoxPreference android:key="watchyesorno"
+    <PreferenceCategory android:title="Watch in Use">
+                <CheckBoxPreference android:key="watchonoroff"
                     android:title="Yes"
                     android:summary="Watch in use" />
-                <CheckBoxPreference
-                    android:title="No"
-                    android:summary="Watch is not in use"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="User">
 

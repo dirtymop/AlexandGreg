@@ -92,17 +92,17 @@ public class Login extends ActionBarActivity {
             public void onClick(View v) {
 
 
-                String firstname = Profile.getCurrentProfile().getFirstName();
-                String facebookidnumber= Profile.getCurrentProfile().getId();
-                AccessToken x = AccessToken.getCurrentAccessToken();
-                String y = x.toString();
+              //  String firstname = Profile.getCurrentProfile().getFirstName();
+              //  String facebookidnumber= Profile.getCurrentProfile().getId();
+              //  AccessToken x = AccessToken.getCurrentAccessToken();
+              //  String y = x.toString();
 
-                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString("firstName", firstname);
-                editor.putString("iD", facebookidnumber);
+//                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+  //              SharedPreferences.Editor editor = settings.edit();
+    //            editor.putString("firstName", firstname);
+      //          editor.putString("iD", facebookidnumber);
 
-                Log.d("tag1", loginButton.getLoginBehavior().toString());
+//                Log.d("tag1", loginButton.getLoginBehavior().toString());
 
 
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -111,15 +111,15 @@ public class Login extends ActionBarActivity {
                 Intent intent = new Intent(Login.this, RoutePlannerActivity.class);
                 startActivity(intent);
                   finish();
-
+//String x;
                 //Attempts to recognize if the user has logged in before
                 if (accessToken != null) {
                     if (profile != null) {
 
                         String b= Profile.getCurrentProfile().getFirstName();
                         AccessToken d = AccessToken.getCurrentAccessToken();
-                        String z = x.toString();
-                        Log.d("tag2",d + z);
+                      //  String z = x.toString();
+                      //  Log.d("tag2",d + z);
 
                     }
                 } else {

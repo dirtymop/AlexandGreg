@@ -1,11 +1,15 @@
 package com.example.dirtymop.myapplication.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +65,7 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
         TextView topspeed =(TextView) row.findViewById(R.id.topspeedHistoryView);
         TextView date= (TextView) row.findViewById(R.id.dateHistoryView);
         TextView time= (TextView) row.findViewById(R.id.timeHistoryView);
+        ImageView mapSnapshot = (ImageView) row.findViewById(R.id.mapSnapshot);
 
 
         topspeed.setText(entries.get(position).getTop_speed());
@@ -69,17 +74,13 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
         distance.setText(entries.get(position).getDistance());
         speed.setText(entries.get(position).getAvgspeed());
         elevation.setText(entries.get(position).getElevation());
+        mapSnapshot.setImageBitmap(StringToBitMap(entries.get(position).getIdentify()));
 
         row.setTag(new String[]{((Integer) position).toString()});
         row.setOnClickListener(this);
 
         Log.d("listviewtest", entries.get(position).getFacebookID() + "inside adapter");
 
-
-
-        // Link XML items to Java objects
-      //  ProgressBar historyProgress = (ProgressBar) row.findViewById(R.id.historyProgress);
-      //  historyProgress.setVisibility(View.VISIBLE); // Set progress bar to visible
         return row;
     }
 
@@ -97,6 +98,17 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
     @Override
     public void add(HistoryTable object) {
         super.add(object);
+    }
+
+    public Bitmap StringToBitMap(String encodedString){
+        try {
+            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch(Exception e) {
+            e.getMessage();
+            return null;
+        }
     }
 }
 

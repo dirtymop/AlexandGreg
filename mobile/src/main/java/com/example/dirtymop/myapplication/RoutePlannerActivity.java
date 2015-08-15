@@ -91,6 +91,7 @@ public class RoutePlannerActivity
         // Load the retained fragment onCreate.
         if (getFragmentManager().findFragmentByTag(TAG_FRAG_RETAINED) == null) {
             retainedFragment = new RetainedFragment();
+            retainedFragment.setRetainInstance(true);
             android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.add(retainedFragment,TAG_FRAG_RETAINED);
             fragmentTransaction.commit();
@@ -98,6 +99,7 @@ public class RoutePlannerActivity
         if (savedInstanceState != null) {
             //Every time during the recreate of the activity, the retainedFragment will be lost, so we need to reassign the retainedFragment
             retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag(TAG_FRAG_RETAINED);
+            retainedFragment.setRetainInstance(true);
         }
 
         // Create the adapter that will return a fragment for each of the three
@@ -122,7 +124,7 @@ public class RoutePlannerActivity
             }
         });
 
-
+//        this.deleteDatabase("local.db");
 
 
         // For each of the sections in the app, add a tab to the action bar.
@@ -182,7 +184,6 @@ public class RoutePlannerActivity
     * NewMapSelection Interface Methods
     * */
     // Start the HUD.
-    @Override
     public void startHud() {
         Intent intent = new Intent(RoutePlannerActivity.this, HudActivity.class);
         startActivity(intent);

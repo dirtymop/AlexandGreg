@@ -72,13 +72,13 @@ public HistoryTable theHistorytable;
     private static final String CREATE_TABLE_HISTORY = "CREATE TABLE IF NOT EXISTS "
             + TABLE_HISTORY
             + " ( "
-            + KEY_ID + " TEXT PRIMARY KEY, "
+            + KEY_ID + " TEXT NOT NULL, "
             + KEY_USER + " TEXT NOT NULL, "
             + KEY_HISTORY_Avgspeed + " TEXT NOT NULL, "
             + KEY_HISTORY_Elevation + " TEXT NOT NULL, "
             + KEY_HISTORY_Date + " TEXT NOT NULL, "
             + KEY_HISTORY_TIME + " TEXT NOT NULL, "
-            + KEY_HISTORY_IDENTIFY + " TEXT NOT NULL, "
+            + KEY_HISTORY_IDENTIFY + " TEXT PRIMARY KEY, "
             + KEY_HISTORY_TIME_STARTED + " TEXT NOT NULL, "
             + KEY_HISTORY_Top_speed + " TEXT NOT NULL, "
             + KEY_HISTORY_MARKERS+ " TEXT NOT NULL, "
@@ -210,69 +210,101 @@ public HistoryTable theHistorytable;
     * LOCAL DB: Getter methods
     * */
     public ContactsTable getContact(SQLiteDatabase db) {
-        ContactsTable entry = new ContactsTable();
-        String[] columns = { KEY_ID, KEY_USER,KEY_CONTACTS_NAME, KEY_CONTACTS_NUMBER, KEY_CONTACTS_EMAIL};
-        Cursor c = db.query(TABLE_CONTACTS, columns, null, null, null, null, null);
-        while(!c.isLast()) {
-            c.moveToNext();
 
-            entry.setFacebookID(c.getString(0));
-            entry.setCustomerName(c.getString(1));
-            entry.setName(c.getString(2));
-            entry.setNumber(c.getString(3));
-            entry.setEmail(c.getString(4));
+        try {
+            ContactsTable entry = new ContactsTable();
+            String[] columns = {KEY_ID, KEY_USER, KEY_CONTACTS_NAME, KEY_CONTACTS_NUMBER, KEY_CONTACTS_EMAIL};
+            Cursor c = db.query(TABLE_CONTACTS, columns, null, null, null, null, null);
 
-            Log.d("db", "[entry]: " + c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2) + ", " + c.getString(3));
+            if (c.getCount() > 0) {
+                while (!c.isLast()) {
+                    c.moveToNext();
+
+                    entry.setFacebookID(c.getString(0));
+                    entry.setCustomerName(c.getString(1));
+                    entry.setName(c.getString(2));
+                    entry.setNumber(c.getString(3));
+                    entry.setEmail(c.getString(4));
+
+                    Log.d("db", "[entry]: " + c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2) + ", " + c.getString(3));
+                }
+                return entry;
+            }
+            else {
+                return null;
+            }
         }
-        return entry;
+        catch (SQLException e) {
+            return null;
+        }
     }
     public PreferencesTable getPreferencesEntry(SQLiteDatabase db){
-        PreferencesTable entry = new PreferencesTable();
 
-    String[] columns = { KEY_ID, KEY_USER, KEY_PREFERENCES_Units};
-    Cursor c = db.query(TABLE_HISTORY, columns, null, null, null, null, null);
-    while(!c.isLast()) {
-        c.moveToNext();
+        try {
+            PreferencesTable entry = new PreferencesTable();
 
-        entry.setFacebookID(c.getString(0));
-        entry.setCustomerName(c.getString(1));
-        entry.setUnits(c.getString(2));
+            String[] columns = {KEY_ID, KEY_USER, KEY_PREFERENCES_Units};
+            Cursor c = db.query(TABLE_HISTORY, columns, null, null, null, null, null);
 
+            if (c.getCount() > 0) {
+                while (!c.isLast()) {
+                    c.moveToNext();
 
-        Log.d("db_GetHistoryEntry", "[entry]: " + c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2) + ", " + c.getString(3));
-    }
-    return entry;
-}
-    public ArrayList<HistoryTable> getHistoryEntry(SQLiteDatabase db){
-       ArrayList<HistoryTable> completehistory=new ArrayList<HistoryTable>();
+                    entry.setFacebookID(c.getString(0));
+                    entry.setCustomerName(c.getString(1));
+                    entry.setUnits(c.getString(2));
 
 
-        String[] columns = { KEY_ID, KEY_USER, KEY_HISTORY_Avgspeed,KEY_HISTORY_Date,KEY_HISTORY_TIME, KEY_HISTORY_Elevation, KEY_HISTORY_latsandlong, KEY_HISTORY_TIME_STARTED,KEY_HISTORY_IDENTIFY, KEY_HISTORY_DISTANCE,KEY_HISTORY_Top_speed,KEY_HISTORY_MARKERS};
-        Cursor c = db.query(TABLE_HISTORY, columns, null, null, null, null, null);
-
-        Log.d("db", "cursor count: " + c.getCount());
-
-        while(!c.isLast()) {
-            c.moveToNext();
-            HistoryTable entry = new HistoryTable();
-            entry.setFacebookID(c.getString(0));
-            entry.setCustomerName(c.getString(1));
-            entry.setAvgspeed(c.getString(2));
-            entry.setDate(c.getString(3));
-            entry.setTime(c.getString(4));
-            entry.setElevation(c.getString(5));
-            entry.setlatsandlong(c.getString(6));
-            entry.setTime_started(c.getString(7));
-            entry.setIdentify(c.getString(8));
-            entry.setDistance(c.getString(9));
-            entry.setTop_speed(c.getString(10));
-            entry.setMarkers(c.getString(11));
-
-
-            Log.d("db_GetHistoryEntry", "[entry]: " + c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2) + ", " + c.getString(3));
-           completehistory.add(entry);
+                    Log.d("db_GetHistoryEntry", "[entry]: " + c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2) + ", " + c.getString(3));
+                }
+                return entry;
+            }
+            else {
+                return null;
+            }
         }
-        return completehistory;
+        catch (SQLException e) {
+            return null;
+        }
+    }
+    public ArrayList<HistoryTable> getHistoryEntry(SQLiteDatabase db){
+
+        try {
+            ArrayList<HistoryTable> completehistory = new ArrayList<HistoryTable>();
+
+            String[] columns = {KEY_ID, KEY_USER, KEY_HISTORY_Avgspeed, KEY_HISTORY_Date, KEY_HISTORY_TIME, KEY_HISTORY_Elevation, KEY_HISTORY_latsandlong, KEY_HISTORY_TIME_STARTED, KEY_HISTORY_IDENTIFY, KEY_HISTORY_DISTANCE, KEY_HISTORY_Top_speed, KEY_HISTORY_MARKERS};
+            Cursor c = db.query(TABLE_HISTORY, columns, null, null, null, null, null);
+
+            Log.d("db", "cursor count: " + c.getCount());
+
+            if (c.getCount() > 0) {
+                while (!c.isLast()) {
+                    c.moveToNext();
+                    HistoryTable entry = new HistoryTable();
+                    entry.setFacebookID(c.getString(0));
+                    entry.setCustomerName(c.getString(1));
+                    entry.setAvgspeed(c.getString(2));
+                    entry.setDate(c.getString(3));
+                    entry.setTime(c.getString(4));
+                    entry.setElevation(c.getString(5));
+                    entry.setlatsandlong(c.getString(6));
+                    entry.setTime_started(c.getString(7));
+                    entry.setIdentify(c.getString(8));
+                    entry.setDistance(c.getString(9));
+                    entry.setTop_speed(c.getString(10));
+                    entry.setMarkers(c.getString(11));
+
+
+                    Log.d("db_GetHistoryEntry", "[entry]: " + c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2) + ", " + c.getString(3));
+                    completehistory.add(entry);
+                }
+                return completehistory;
+            }
+            return null;
+        }
+        catch (SQLException e) {
+            return null;
+        }
     }
 
     public void Pullfromthecloud(SQLiteDatabase db)

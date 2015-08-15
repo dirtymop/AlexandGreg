@@ -13,46 +13,29 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Canvas;
+import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidplot.Plot;
-import com.androidplot.PlotListener;
-import com.androidplot.ui.SeriesRenderer;
-import com.androidplot.util.PlotStatistics;
-import com.androidplot.xy.BoundaryMode;
-import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYSeriesFormatter;
 import com.example.dirtymop.myapplication.classes.AndroidWear;
 import com.example.dirtymop.myapplication.classes.ContactsTable;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
-import com.example.dirtymop.myapplication.fragments.NewMapSelection;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
 import com.example.dirtymop.myapplication.fragments.RetainedFragment;
 import com.example.dirtymop.myapplication.services.LocationAndSensorService;
@@ -62,28 +45,31 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class HudActivity
         extends Activity
         implements ServiceConnection,
-        OnMapReadyCallback {
+        OnMapReadyCallback,
+        GoogleMap.SnapshotReadyCallback {
 
     private static final String TAG_FRAG_RETAINED = "RetainedFragment";
-    TextView distance, speed;//latitude, longitude, accuracy, altitude, speed, acceleration;
+    TextView distanceView, speedView, connectionText;//latitude, longitude, accuracy, altitude, speedView, acceleration;
     Button closeHud;
     LinearLayout connectionLayout;
+    ProgressBar progressBar;
+
     private int LOCATION_DISTANCE_REFRESH = 0;  // meters
     private int LOCATION_TIME_REFRESH = 500;    // milliseconds
 
@@ -96,13 +82,21 @@ public class HudActivity
     // Google Maps
     GoogleMap googleMap;
     LatLng lastLatLng = null;
-    HashMap<String, String> route;
-    ArrayList<LatLng> currentRoute = null;
+//    HashMap<String, String> route;
+//    ArrayList<String> route;
+    HashMap<LatLng, String> markers = new HashMap<LatLng, String>();
+    ArrayList<Double> altitude = new ArrayList<Double>();
+    ArrayList<Float> speed = new ArrayList<Float>();
+    Float distance;
+    String startTime, endTime;
+    Bitmap routeSnapshot;
+    ArrayList<LatLng> currentRoute = new ArrayList<LatLng>();
     int routeIndex;
-    private final float ZOOM_LEVEL = 17;
+    private final float ZOOM_LEVEL = 18;
     private final int ZOOM_DURATION = 1000; // milliseconds
     private Marker currentMarker = null;
     boolean isRestored = false;
+    volatile boolean snapshotIsReady = false;
 
     // Service member variables
     LocationAndSensorService service;
@@ -164,34 +158,44 @@ public class HudActivity
         registerReceiver(activityReceiver, intentFilter);
         createService();
 
-        speed = (TextView) findViewById(R.id.speed);
-        distance = (TextView) findViewById(R.id.distance);
+        connectionText = (TextView) findViewById(R.id.connectionText);
+        connectionText.setText("waiting for GPS...");
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        connectionLayout = (LinearLayout) findViewById(R.id.connectionLayout);
+        connectionLayout.setVisibility(View.VISIBLE);
+
+        speedView = (TextView) findViewById(R.id.speed);
+        distanceView = (TextView) findViewById(R.id.distance);
         closeHud = (Button) findViewById(R.id.closeHudButton);
         closeHud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+//                connectionLayout.setVisibility(View.VISIBLE);
+//                connectionText.setText("saving route...");
+                endTime = getCurrentTimeMillis();
+                takeSnapshot();
             }
         });
-        connectionLayout = (LinearLayout) findViewById(R.id.connectionLayout);
-        connectionLayout.setVisibility(View.VISIBLE);
 
         if (getFragmentManager().findFragmentByTag(TAG_FRAG_RETAINED) == null) {
             retainedFragment = new RetainedFragment();
+            retainedFragment.setRetainInstance(true);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.add(retainedFragment,TAG_FRAG_RETAINED);
             fragmentTransaction.commit();
         }
+
         if (savedInstanceState != null) {
             //Every time during the recreate of the activity, the retainedFragment will be lost, so we need to reassign the retainedFragment
             retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag(TAG_FRAG_RETAINED);
+            retainedFragment.setRetainInstance(true);
             currentRoute = retainedFragment.getRoute();
             aw = retainedFragment.getAndroidWear();
-            route = retainedFragment.getHashRoute();
+//            route = retainedFragment.getHashRoute();
             routeIndex = retainedFragment.getRouteIndex();
 
-            speed.setText(String.format("%.2f", retainedFragment.getSpeed()) + " [mph]");
-            distance.setText(String.format("%.2f", retainedFragment.getDistance()) + " [m]");
+            speedView.setText(String.format("%.2f", retainedFragment.getSpeed()) + " [mph]");
+            distanceView.setText(String.format("%.2f", retainedFragment.getDistance()) + " [m]");
 
             isRestored = true;
         }
@@ -201,8 +205,8 @@ public class HudActivity
             retainedFragment.setAndroidWear(aw);
 
             // Create new hashmap for route
-            route = new HashMap<String, String>();
-            retainedFragment.updateHashRoute(route);
+//            route = new HashMap<String, String>();
+//            retainedFragment.updateHashRoute(route);
 
             currentRoute = new ArrayList<LatLng>();
             retainedFragment.updateRoute(currentRoute);
@@ -241,7 +245,7 @@ public class HudActivity
 //        longitude = (TextView) findViewById(R.id.longitude);
 //        accuracy = (TextView) findViewById(R.id.accuracy);
 //        altitude = (TextView) findViewById(R.id.altitude);
-//        speed = (TextView) findViewById(R.id.speed);
+//        speedView = (TextView) findViewById(R.id.speedView);
 //        distance = (TextView) findViewById(R.id.distance);
 //        acceleration = (TextView) findViewById(R.id.acceleration);
 //        plot = (XYPlot) findViewById(R.id.mySimpleXYPlot);
@@ -274,6 +278,10 @@ public class HudActivity
 //        routeIndex = 0;
     }
 
+    private void takeSnapshot() {
+        googleMap.snapshot(this);
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -283,7 +291,7 @@ public class HudActivity
         retainedFragment.setAndroidWear(aw);
         retainedFragment.setRouteIndex(routeIndex);
         retainedFragment.updateRoute(currentRoute);
-        retainedFragment.updateHashRoute(route);
+//        retainedFragment.updateHashRoute(route);
     }
 
     @Override
@@ -300,14 +308,6 @@ public class HudActivity
         super.onResume();
 
         Log.d("hud", "[onResume] service is started: " + serviceIsStarted());
-//        while (!serviceIsStarted()) {
-//            Log.d("hud", "help, I have fallen!");
-//            try {
-//                Thread.sleep(500);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
         if (serviceIsStarted()) bindWithService();
     }
 
@@ -315,8 +315,10 @@ public class HudActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        // Send route data to the local database.
-        saveRouteToLocalDB(route);
+//        googleMap.snapshot(this);
+//
+//        // Send route data to the local database.
+//        saveRouteToLocalDB();
 
         // Destroy all the things...
         cleanup();
@@ -324,54 +326,43 @@ public class HudActivity
 
     public void updateLocation(Bundle location) {
 
+        connectionLayout.setVisibility(View.GONE);
+
         // Set as current location
         LatLng current = new LatLng(location.getDouble("latitude"), location.getDouble("longitude"));
+
+        // Store each entry.
         currentRoute.add(current);
+        altitude.add(location.getDouble("altitude"));
+        speed.add(location.getFloat("speed"));
+        distance = location.getFloat("distance");
 
-        speed.setText(String.format("%.2f", location.getFloat("speed")) + " [mph]");
-        distance.setText(String.format("%.2f", location.getFloat("distance")) + " [m]");
+        // Set text in floating window.
+        speedView.setText(String.format("%.2f", location.getFloat("speed")) + " [mph]");
+        distanceView.setText(String.format("%.2f", location.getFloat("distance")) + " [m]");
 
+        // Push items to retained fragment.
         retainedFragment.setDistance(location.getFloat("distance"));
         retainedFragment.setSpeed(location.getFloat("speed"));
-//        latitude.setText("lat: " + Double.toString(location.getDouble("latitude")));
-//        longitude.setText("lon: " + Double.toString(location.getDouble("longitude")));
-//        altitude.setText("alt: " + Double.toString(location.getDouble("altitude")));
-//        accuracy.setText("acc: " + Float.toString(location.getFloat("accuracy")));
-//        speed.setText("speed: " + Float.toString(location.getFloat("speed")));
 
         // Add lat/lng to Google Maps
         updatePrimaryPath(current);
         centerMapOnLocation(current);
 
         // Update marker to current location
-        markerOnLocation(current);
-
-        // Place a marker @ the starting location
-//        if (routeIndex == 0) {
-//            googleMap.addMarker(
-//                    new MarkerOptions()
-//                            .position(current)
-//                            .title("Start: " + getCurrentTime()));
-//        }
+        markerOnLocation(current, "You are here!");
 
         // Save latitude and longitude to the map
-        String locationString = Double.toString(current.latitude)
-                        + ","
-                        + Double.toString(current.longitude);
-        route.put(Integer.toString(routeIndex), locationString);
+//        String locationString = Double.toString(current.latitude)
+//                        + ","
+//                        + Double.toString(current.longitude);
+//        route.put(Integer.toString(routeIndex), locationString);
+//        route.add(locationString);
         routeIndex++; // Increment the route index.
 
         Log.d("hud","updating location");
 
         aw.sendLatLng(current);
-
-//        if (count == 2) {
-//            Toast.makeText(this, "sending coordinates to wear!", Toast.LENGTH_SHORT).show();
-//            count = 0;
-//            // Send Lat/Lng to AW.
-//            aw.sendLatLng(current);
-//        }
-//        else count++;
     }
 
     public boolean isOverThreshold(double[] mobile, double[] wear) {
@@ -447,7 +438,7 @@ public class HudActivity
 
     // Handles all methods pertaining to emergency response.
     private void handleEmergency() {
-        Toast.makeText(this, "EMERGENCY: calling, 5404197390", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "EMERGENCY: calling, 5404197390", Toast.LENGTH_SHORT).show();
 
         // Ensure user can make phone calls.
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
@@ -459,8 +450,13 @@ public class HudActivity
             dbhelper.createTables(mydb);
             EMS=dbhelper.getContact(mydb);
             //----------------------------------------------------------
-            Log.d("HudActivity","call being placed to" + EMS.getName());
-            call(EMS.getNumber());
+            if (EMS != null) {
+                Toast.makeText(this, "\"EMERGENCY: calling, " + EMS.getName(), Toast.LENGTH_SHORT).show();
+                call(EMS.getNumber());
+            }
+            else {
+                Toast.makeText(this, "No emergency contacts found.\nConsider adding one...", Toast.LENGTH_SHORT).show();
+            }
 
         }
         else {
@@ -578,14 +574,14 @@ public class HudActivity
     private void centerMapOnLocation(LatLng loc) {
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, ZOOM_LEVEL));
     }
-    private void markerOnLocation(LatLng loc) {
+    private void markerOnLocation(LatLng loc, String message) {
         if (currentMarker != null)  {
             currentMarker.remove();
         }
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(loc)
                 .visible(true)
-                .title("hello world")
+                .title(message)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_dot));
         currentMarker = googleMap.addMarker(markerOptions);
     }
@@ -594,17 +590,43 @@ public class HudActivity
     public void onMapReady(GoogleMap googleMap) {
         Log.d("hud", "map is ready");
 
+        startTime = getCurrentTimeMillis();
+
         connectionLayout.setVisibility(View.GONE);
 
         // Set the local Google Map object.
         this.googleMap = googleMap;
+
+        Log.d("test", "retainedFragment.hasStartingContent(): " + retainedFragment.hasStartingContent());
+        // Check if the retained fragment has content waiting.
+        if (retainedFragment.hasStartingContent()) {
+
+            // Save markers.
+            markers = retainedFragment.getMarkers();
+
+            Log.d("test", "loaded " + markers.size() + " markers onto the map.");
+            Toast.makeText(this, "loaded " + markers.size() + " markers onto the map.", Toast.LENGTH_SHORT);
+
+            // Iterate through all markers and populate on the map.
+            Iterator it = markers.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                this.googleMap.addMarker(
+                        new MarkerOptions()
+                                .position((LatLng) pair.getKey())
+                                .title((String) pair.getValue())
+                );
+                it.remove(); // avoids a ConcurrentModificationException
+            }
+        }
+
 
         if (isRestored) {
             for (int i = 0; i < currentRoute.size(); i++) {
                 updatePrimaryPath(currentRoute.get(i));
             }
             centerMapOnLocation(currentRoute.get(currentRoute.size()-1));
-            markerOnLocation(currentRoute.get(currentRoute.size()-1));
+            markerOnLocation(currentRoute.get(currentRoute.size()-1), "You are here!");
 
             isRestored = false;
         }
@@ -614,7 +636,7 @@ public class HudActivity
     * */
 
     // Save route to local database
-    public void saveRouteToLocalDB(HashMap<String, String> data) {
+    public void saveRouteToLocalDB() {
         // Instance of database helper class
         dbHelper = new DatabaseHelper(this);
         // Instance of local SQLite database
@@ -623,7 +645,109 @@ public class HudActivity
         // TODO: put data into local DB here
         //
         // db.insertRoute(...)
-        Log.d("hud", "saving route..." + "\nlocal DB: " + DB_FILENAME + "\ncontents: " + data.toString());
+
+        // Encode Route
+        String encodedRoute = "";
+        for (LatLng point : currentRoute) {
+
+            // Convert Lat/Lng pair into String based on schema.
+            encodedRoute = encodedRoute
+                    + Double.toString(point.latitude)
+                    + ","
+                    + Double.toString(point.longitude);
+
+            // If point is not the last one, add delimeter for next item.
+            if (point != currentRoute.get(currentRoute.size()-1))
+                encodedRoute = encodedRoute + ";";
+        }
+
+        // Encode altitude
+        String encodedAltitude = "";
+        for (Double point : altitude) {
+
+            // Convert altitude into String based on schema.
+            encodedAltitude = encodedAltitude
+                    + Double.toString(point);
+
+            // If point is not the last one, add delimeter for next item.
+            if (point != altitude.get(altitude.size()-1))
+                encodedAltitude = encodedAltitude + ",";
+        }
+
+        // Encode speed.
+        String encodedSpeed = "";
+        for (Float point : speed) {
+
+            // Convert altitude into String based on schema.
+            encodedSpeed = encodedSpeed
+                    + Double.toString(point);
+
+            // If point is not the last one, add delimeter for next item.
+            if (point != speed.get(altitude.size()-1))
+                encodedSpeed = encodedSpeed + ",";
+        }
+
+        // Encode distance.
+        String encodedDistance = Float.toString(distance);
+
+        // Encode markers.
+        String encodedMarkers = "";
+        Iterator it = markers.entrySet().iterator();
+        while (it.hasNext()) {
+            HashMap.Entry pair = (HashMap.Entry)it.next();
+
+            // Convert altitude into String based on schema.
+            encodedMarkers = encodedMarkers
+                    + Double.toString(((LatLng) pair.getKey()).latitude)
+                    + ","
+                    + Double.toString(((LatLng) pair.getKey()).longitude)
+                    + "~"
+                    + pair.getValue();
+
+            // If point is not the last one, add delimeter for next item.
+            if (it.hasNext())
+                encodedMarkers = encodedMarkers + ";";
+
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        // Convert snapshot bitmap to string.
+        String encodedBitmap = " ";
+        if (snapshotIsReady)
+            encodedBitmap = convertBitmapToString(routeSnapshot);
+
+        dbHelper.insertHistoryEntry(
+                db,
+                new HistoryTable(
+                        "blah",
+                        "dude",
+                        encodedRoute,
+                        getCurrentDate(),
+                        endTime,
+                        encodedAltitude,
+                        encodedSpeed,
+                        encodedDistance,
+                        encodedBitmap,
+                        encodedMarkers,
+                        startTime,
+                        " "
+                )
+        );
+
+        Log.d("hud", "saving route..."
+                        + "\nlocal DB: " + DB_FILENAME
+                        + "\nencodedRoute: " + encodedRoute
+                        + "\nencodedAltitude: " + encodedAltitude
+                        + "\nencodedSpeed: " + encodedSpeed
+                        + "\nendTime: " + endTime
+                        + "\ngetCurrentDate(): " + getCurrentDate()
+                        + "\nencodedDistance: " + encodedDistance
+                        + "\nencodedBitmap: " + encodedBitmap
+                        + "\nencodedMarkers: " + encodedMarkers
+
+        );
+
+        db.close();
     }
 
     // Gets the current time and date in a formatted string.
@@ -632,11 +756,38 @@ public class HudActivity
         Calendar c = Calendar.getInstance();
 
         // Create a format for the date.
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         // Return the formatted string.
         return sdf.format(c.getTime());
     }
+
+    // Gets the current time and date in a formatted string.
+    public String getCurrentDate() {
+        // Get current instance of the calendar.
+        Calendar c = Calendar.getInstance();
+
+        // Create a format for the date.
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+
+        // Return the formatted string.
+        return sdf.format(c.getTime());
+    }
+
+    // Gets the current time in millis.
+    public String getCurrentTimeMillis() {
+        // Get current instance of the calendar in millis and return.
+        return ("" + Calendar.getInstance().getTimeInMillis());
+    }
+
+    public static String convertBitmapToString(Bitmap src) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        src.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        return Base64.encodeToString(b, Base64.DEFAULT);
+    }
+
+
 
     // Method for tidying up onDestroy.
     public void cleanup() {
@@ -645,5 +796,40 @@ public class HudActivity
         unregisterReceiver(activityReceiver);
         stopService(new Intent(HudActivity.this, LocationAndSensorService.class));
 //        service.onDestroy();
+    }
+
+    @Override
+    public void onSnapshotReady(Bitmap bitmap) {
+        routeSnapshot = bitmap;
+        snapshotIsReady = true;
+
+        new EndingTask().execute();
+    }
+
+    private class EndingTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            connectionLayout.setVisibility(View.VISIBLE);
+            connectionText.setText("saving route...");
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            saveRouteToLocalDB();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            connectionLayout.setVisibility(View.GONE);
+
+            finish();
+        }
     }
 }

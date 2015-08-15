@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,7 @@ import com.example.dirtymop.myapplication.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link settings.OnFragmentInteractionListener} interface
+ * {@link settings.SettingsInteractionListener} interface
  * to handle interaction events.
  * Use the {@link settings#newInstance} factory method to
  * create an instance of this fragment.
@@ -30,7 +31,7 @@ public class settings extends PreferenceFragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private SettingsInteractionListener listener;
 
     /**
      * Use this factory method to create a new instance of
@@ -63,11 +64,40 @@ public class settings extends PreferenceFragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
+        // Preference option for clearing the entire database.
+        Preference clearDatabasePreference = (Preference) findPreference("clearDatabasePreference");
+        clearDatabasePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                listener.processClearDatabase();
+                return true;
+            }
+        });
     }
 
-    public interface OnFragmentInteractionListener {
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (SettingsInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement MenuInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
+    public interface SettingsInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+        public void processClearDatabase();
     }
 
 }

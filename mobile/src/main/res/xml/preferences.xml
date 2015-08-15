@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory android:title="Units">
         <CheckBoxPreference android:key="checkbox_preference"
             android:title="Imperial"
@@ -9,23 +10,38 @@
             android:summary="Distance in Kilometers"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Emergency Contact">
-                <EditTextPreference android:key="nameofcontact"
-                    android:title="Name"
-                    android:summary="Enter the Name of emergency Contact" />
-                <EditTextPreference android:key="numberofcontact"
-                    android:title="Number"
-                    android:summary="Enter the Number of the Emergency Contact"/>
-                <EditTextPreference android:key="Email of Contact"
-                    android:title="Email"
-                    android:summary="Enter the Email of the Emergency Contact"/>
-            </PreferenceCategory>
-    <PreferenceCategory android:title="Watch in Use">
-                <CheckBoxPreference android:key="watchonoroff"
-                    android:title="Yes"
-                    android:summary="Watch in use" />
+    <PreferenceCategory
+        android:title="Emergency Contact">
+        <EditTextPreference
+            android:key="nameofcontact"
+            android:title="Name"
+            android:summary="Enter the Name of emergency Contact." />
+        <EditTextPreference
+            android:key="numberofcontact"
+            android:title="Number"
+            android:summary="Enter the Number of the Emergency Contact."/>
+        <EditTextPreference
+            android:key="Email of Contact"
+            android:title="Email"
+            android:summary="Enter the Email of the Emergency Contact."/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="User">
 
+    <PreferenceCategory
+        android:title="Wearable">
+        <CheckBoxPreference
+            android:key="watchonoroff"
+            android:title="Enable Wearables"
+            android:summary="Unlocks smartwatch functionality for HUD and route information." />
+    </PreferenceCategory>
+
+    <!--<PreferenceCategory android:title="User">-->
+    <!--</PreferenceCategory>-->
+
+    <PreferenceCategory
+        android:title="Database">
+        <Preference
+            android:title="Clear local database"
+            android:key="clearDatabasePreference"
+            android:summary="@string/database_clear_message" />
     </PreferenceCategory>
 </PreferenceScreen>

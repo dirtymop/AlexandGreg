@@ -27,6 +27,9 @@
     <string name="title_activity_login">Login</string>
 
 
+    <string name="database_clear_message">Completely wipes the entire local database.</string>
+
+
 
 
 

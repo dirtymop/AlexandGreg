@@ -1,7 +1,9 @@
 package com.example.dirtymop.myapplication;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.preference.PreferenceFragment;
@@ -19,7 +21,9 @@ import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.fragments.settings;
 
 
-public class SettingActivity extends ActionBarActivity implements settings.OnFragmentInteractionListener {
+public class SettingActivity
+        extends ActionBarActivity
+        implements settings.SettingsInteractionListener {
 
 
     private FragmentManager fm;
@@ -57,28 +61,49 @@ public class SettingActivity extends ActionBarActivity implements settings.OnFra
     public void onFragmentInteraction(Uri uri)
     {}
 
-
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_setting, menu);
-        return true;
+    public void processClearDatabase() {
+        new AlertDialog.Builder(this)
+                .setTitle("Clear history")
+                .setMessage("Are you sure you want to delete all history entries?\nThis action cannot be undone.")
+                .setPositiveButton("Yes please.", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getApplication().deleteDatabase("local.db");
+                        Toast.makeText(getApplicationContext(), "History successfully deleted!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("No way!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setIcon(R.drawable.ic_dialog_alert)
+                .show();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_setting, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 }
 

@@ -1,9 +1,12 @@
 package com.example.dirtymop.myapplication.fragments;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,8 +62,8 @@ public class EntryExpansionFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_entry_expansion, container, false);
 
         // Initialze view members.
-        TextView tv = (TextView) view.findViewById(R.id.temp);
-        tv.setText(this.unique_id);
+        TextView title = (TextView) view.findViewById(R.id.title);
+        title.setText(this.unique_id);
 
         // Inflate the layout for this fragment
         return view;

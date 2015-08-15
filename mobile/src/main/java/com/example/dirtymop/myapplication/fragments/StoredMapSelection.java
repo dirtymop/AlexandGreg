@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.adapters.HistoryEntryAdapter;
@@ -58,11 +60,15 @@ public class StoredMapSelection extends Fragment {
     private android.app.FragmentManager fm;
 
     private Button selectMapButton;
+    private TextView storedRouteTitlebar;
 
     // SQLite database
     private SQLiteDatabase db;
     private DatabaseHelper dbHelper;
     private static final String DB_FILENAME = "local.db";
+
+    // Expansion fragment
+    EntryExpansionFragment eef;
 
     /**
      * Use this factory method to create a new instance of
@@ -101,6 +107,19 @@ public class StoredMapSelection extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stored_map_selection, container, false);
 
+        // Initialize the titlebar.
+        storedRouteTitlebar = (TextView) view.findViewById(R.id.storedRouteTitlebar);
+        storedRouteTitlebar.setText("Select a stored route...");
+        storedRouteTitlebar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "reloading entries...", Toast.LENGTH_SHORT).show();
+//                getActivity().deleteDatabase("local.db");
+                db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+                loadEntries();
+            }
+        });
+
         // Initialize the ListView
         entriesListView = (ListView) view.findViewById(R.id.storageList);
         entriesListView.setVisibility(View.VISIBLE);
@@ -125,80 +144,136 @@ public class StoredMapSelection extends Fragment {
         // true or false settings check box
         Boolean watchison=sharedPrefs.getBoolean("watchonoroff",false);
 
-        //loads into local db
-        DatabaseHelper dbhelper= new DatabaseHelper(this.getActivity().getApplicationContext());
-        SQLiteDatabase mydb = dbhelper.databaseOpenOrCreate("local.db");
-        dbhelper.createTables(mydb);
-        dbhelper.insertContact(mydb,EMS);
-
-        //------------------------------------------------------------------------------------------
-
-
-
-
-
-
         // SQLite
         dbHelper = new DatabaseHelper(this.getActivity().getApplicationContext());
         db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
         dbHelper.createTables(db);
 
-        dbHelper.insertHistoryEntry(db, new HistoryTable(
-                "Facebookid1",
-                "CustomerName1",
-                "latslong1",
-                "date1",
-                "time1",
-                "elevation1",
-                "avgspeed1",
-                "distance1",
-                "identify1",
-                "markers1",
-                "timestarted1",
-                "topspeed1"
-        ));
-        dbHelper.insertHistoryEntry(db, new HistoryTable(
-                "2222",
-                "2222",
-                "2222",
-                "2222",
-                "2222",
-                "2222",
-                "2222",
-                "2222",
-                "2222",
-                "2222",
-                "2222",
-                "2222"
-        ));
+        loadEntries();
 
+        // SQLite
+//        dbHelper = new DatabaseHelper(this.getActivity().getApplicationContext());
+//        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+//        dbHelper.createTables(db);
+//
+////        dbHelper.insertHistoryEntry(db, new HistoryTable(
+////                "Facebookid1",
+////                "CustomerName1",
+////                "latslong1",
+////                "date1",
+////                "time1",
+////                "elevation1",
+////                "avgspeed1",
+////                "distance1",
+////                "identify1",
+////                "markers1",
+////                "timestarted1",
+////                "topspeed1"
+////        ));
+//
+//
+//        entries = new ArrayList<HistoryTable>();
+//        entries=dbHelper.getHistoryEntry(db);
+//        db.close();
+//
+//        // Initialize the adapter
+//        if (entries.size() != 0)
+//            adapter = new HistoryEntryAdapter(this,getActivity().getApplicationContext(), entries);
+//        else
+//            adapter = new HistoryEntryAdapter(this,getActivity().getApplicationContext());
+//
+//        // Set the adapter for the ListView
+//        entriesListView.setAdapter(adapter);
 
+        //loads into local db
+//        DatabaseHelper dbhelper= new DatabaseHelper(this.getActivity().getApplicationContext());
+//        SQLiteDatabase mydb = dbhelper.databaseOpenOrCreate("local.db");
+//        dbhelper.createTables(mydb);
+//        dbhelper.insertContact(mydb,EMS);
+//
+//        //------------------------------------------------------------------------------------------
+//
+//
+//
+//
+//
+//
+//        // SQLite
+//        dbHelper = new DatabaseHelper(this.getActivity().getApplicationContext());
+//        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+//        dbHelper.createTables(db);
+//
+////        dbHelper.insertHistoryEntry(db, new HistoryTable(
+////                "Facebookid1",
+////                "CustomerName1",
+////                "latslong1",
+////                "date1",
+////                "time1",
+////                "elevation1",
+////                "avgspeed1",
+////                "distance1",
+////                "identify1",
+////                "markers1",
+////                "timestarted1",
+////                "topspeed1"
+////        ));
+//
+//
+//        entries = new ArrayList<HistoryTable>();
+//        entries=dbHelper.getHistoryEntry(db);
+//        db.close();
+//
+//        // Initialize the adapter
+//        if (entries.size() != 0)
+//            adapter = new HistoryEntryAdapter(this,getActivity().getApplicationContext(), entries);
+//        else
+//            adapter = new HistoryEntryAdapter(this,getActivity().getApplicationContext());
+//
+//        // Set the adapter for the ListView
+//        entriesListView.setAdapter(adapter);
+
+        // Retun the inflated view
+        return view;
+    }
+
+    public void loadEntries() {
+        //
         entries = new ArrayList<HistoryTable>();
         entries=dbHelper.getHistoryEntry(db);
-        //entries.add(new HistoryTable("alex","1","1","1","1","1","1", "1", "1", "1", "1", "1"));
-        ///entries.add(new HistoryTable("greg","2","2","2","2","2","2", "2", "2", "2", "2", "2"));
-
-
-
+        db.close();
 
         // Initialize the adapter
-        if (entries.size() != 0)
+        if (entries != null)
             adapter = new HistoryEntryAdapter(this,getActivity().getApplicationContext(), entries);
         else
             adapter = new HistoryEntryAdapter(this,getActivity().getApplicationContext());
 
         // Set the adapter for the ListView
         entriesListView.setAdapter(adapter);
-
-        // Retun the inflated view
-        return view;
     }
 
     public void loadExpansion(String unique_id) {
+
+        storedRouteTitlebar.setText("Return to list...");
+        storedRouteTitlebar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                storedRouteTitlebar.setText("Select a stored route...");
+
+                expansionFrame.setVisibility(View.GONE);
+                entriesListView.setVisibility(View.VISIBLE);
+
+                FragmentManager fm = getFragmentManager();
+                fm.beginTransaction().remove(eef).commit();
+
+                storedRouteTitlebar.setOnClickListener(null);
+            }
+        });
+
         expansionFrame.setVisibility(View.VISIBLE);
         entriesListView.setVisibility(View.GONE);
 
-        EntryExpansionFragment eef = EntryExpansionFragment.newInstance(unique_id);
+        eef = EntryExpansionFragment.newInstance(unique_id);
 
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().replace(R.id.expansionFrame, eef).commit();

@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.dirtymop.myapplication.fragments.EntryExpansionFragment"
-    android:background="@color/green">
+    android:background="@color/gravelgrey"
+    android:weightSum="1">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -12,13 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.5"
+        android:background="@drawable/card_bg_shadow"
         android:weightSum="1">
 
-        <TextView android:layout_width="match_parent"
+        <TextView
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.2"
+            android:gravity="center"
             android:text="@string/hello_blank_fragment"
-            android:id="@+id/temp"/>
+            android:id="@+id/title"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -29,13 +35,13 @@
         android:weightSum="1">
 
         <com.androidplot.xy.XYPlot
-            android:id="@+id/mySimpleXYPlot"
+            android:id="@+id/speedXYPlot"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            androidPlot.title=""
+            android:layout_weight="0.5"
+            androidPlot.title="Your Speed"
             androidPlot.domainLabel="Time"
-            androidPlot.rangeLabel="Accuracy"
+            androidPlot.rangeLabel="Speed"
             androidPlot.graphWidget.marginTop="20dp"
             androidPlot.graphWidget.marginLeft="15dp"
             androidPlot.graphWidget.marginBottom="25dp"
@@ -45,6 +51,7 @@
             androidPlot.legendWidget.heightMetric.value="25dp"
             androidPlot.legendWidget.positionMetrics.anchor="right_bottom"
             androidPlot.graphWidget.gridLinePaint.color="#000000"/>
+
     </LinearLayout>
 
 </LinearLayout>

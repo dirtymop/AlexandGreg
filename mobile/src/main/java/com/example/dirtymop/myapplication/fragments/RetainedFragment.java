@@ -22,7 +22,6 @@ public class RetainedFragment extends Fragment {
     // Data to be preserved
     ArrayList<LatLng> route = new ArrayList<LatLng>();
     HashMap<String, String> hashRoute = new HashMap<String, String>();
-//    ArrayList<LatLng> markers = new ArrayList<LatLng>();
     HashMap<LatLng, String> markers = new HashMap<LatLng, String>();
     String date = "";
     float speed = 0;
@@ -56,30 +55,18 @@ public class RetainedFragment extends Fragment {
     // Setter methods
     public void updateRoute(ArrayList<LatLng> route) {
         this.route = route;
-//        for (LatLng loc : route) {
-//            this.route.add(loc);
-//        }
     }
-//    public void updateMarkers(ArrayList<LatLng> markers) {
-//        this.markers = markers;
-////        for (LatLng loc : markers) {
-////            this.markers.add(loc);
-////        }
-//    }
     public void updateMarkers(HashMap<LatLng, String> markers) {
         this.markers = markers;
-//        for (LatLng loc : markers) {
-//            this.markers.add(loc);
+    }
+//    public void updateHashRoute(HashMap<String, String> hashRoute) {
+//        Iterator it = hashRoute.entrySet().iterator();
+//        while (it.hasNext()) {
+//            HashMap.Entry pair = (HashMap.Entry)it.next();
+//            this.hashRoute.put(pair.getKey().toString(), pair.getValue().toString());
+//            it.remove(); // avoids a ConcurrentModificationException
 //        }
-    }
-    public void updateHashRoute(HashMap<String, String> hashRoute) {
-        Iterator it = hashRoute.entrySet().iterator();
-        while (it.hasNext()) {
-            HashMap.Entry pair = (HashMap.Entry)it.next();
-            this.hashRoute.put(pair.getKey().toString(), pair.getValue().toString());
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-    }
+//    }
     public void setDate(String date) { this.date = date; }
     public void setAndroidWear(AndroidWear aw) { this.aw = aw; }
     public void setRouteIndex(int routeIndex) { this.routeIndex = routeIndex; }
@@ -92,13 +79,17 @@ public class RetainedFragment extends Fragment {
 
     // Getter methods.
     public ArrayList<LatLng> getRoute() { return route; }
-//    public ArrayList<LatLng> getMarkers() { return markers; }
     public HashMap<LatLng, String> getMarkers() { return markers; }
-    public HashMap<String, String> getHashRoute() { return hashRoute; }
+//    public HashMap<String, String> getHashRoute() { return hashRoute; }
     public String getDate() { return date; }
     public AndroidWear getAndroidWear() { return this.aw; }
     public int getRouteIndex() { return this.routeIndex; }
     public float getSpeed() { return this.speed; }
     public float getDistance() { return this.distance; }
 
+    // Determines if
+    public boolean hasStartingContent() {
+        if (markers.size() > 0 || hashRoute.size() > 0 ) return true;
+        else return false;
+    }
 }

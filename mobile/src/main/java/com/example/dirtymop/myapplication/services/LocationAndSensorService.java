@@ -234,7 +234,7 @@ public class LocationAndSensorService
         locationBundle.putDouble("latitude", location.getLatitude());
         locationBundle.putDouble("longitude", location.getLongitude());
 //        locationBundle.putFloat("accuracy", location.getAccuracy());
-//        locationBundle.putDouble("altitude", location.getAltitude());)
+        locationBundle.putDouble("altitude", location.getAltitude());
         locationBundle.putFloat("speed", location.getSpeed());
 
         // Update total distance.

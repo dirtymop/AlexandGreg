@@ -13,7 +13,9 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:background="@color/blue"
-        android:textColor="@color/lightgray"/>
+        android:textColor="@color/lightgray"
+        android:id="@+id/storedRouteTitlebar"
+        android:clickable="true"/>
 
     <ListView
         android:layout_width="match_parent"

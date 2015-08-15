@@ -192,15 +192,6 @@ public class NewMapSelection
             }
         });
 
-//        if (savedInstanceState != null) {
-//            //Every time during the recreate of the activity, the retainedFragment will be lost, so we need to reassign the retainedFragment
-//            mapFragment = (SupportMapFragment) getFragmentManager().findFragmentByTag(TAG_FRAG_MAP);
-//        }
-//        else {
-//            // Initialize the Map fragment.
-//            initMap();
-//        }
-
         // Initialize the Map fragment.
         initMap();
         // Google Maps will send callbacks to this fragment.

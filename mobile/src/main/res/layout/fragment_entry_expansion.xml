@@ -35,15 +35,15 @@
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.6"
+                android:layout_weight="1"
                 android:id="@+id/mapEntryImage"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center" />
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.4"></LinearLayout>
+            <!--<LinearLayout-->
+                <!--android:orientation="vertical"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="0.4"></LinearLayout>-->
         </LinearLayout>
 
         <View
@@ -59,7 +59,7 @@
             android:weightSum="1">
 
             <com.androidplot.xy.XYPlot
-                android:id="@+id/speedXYPlot"
+                android:id="@+id/altitudeXYPlot"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"

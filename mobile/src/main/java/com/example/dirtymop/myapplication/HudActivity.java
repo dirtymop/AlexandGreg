@@ -250,7 +250,7 @@ public class HudActivity
 //        acceleration = (TextView) findViewById(R.id.acceleration);
 //        plot = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 
-        // Plotting
+//        // Plotting
 //        xAccelerationSeries = new SimpleXYSeries("x-axis");
 //        yAccelerationSeries = new SimpleXYSeries("y-axis");
 //        zAccelerationSeries = new SimpleXYSeries("z-axis");
@@ -352,12 +352,6 @@ public class HudActivity
         // Update marker to current location
         markerOnLocation(current, "You are here!");
 
-        // Save latitude and longitude to the map
-//        String locationString = Double.toString(current.latitude)
-//                        + ","
-//                        + Double.toString(current.longitude);
-//        route.put(Integer.toString(routeIndex), locationString);
-//        route.add(locationString);
         routeIndex++; // Increment the route index.
 
         Log.d("hud","updating location");
@@ -366,11 +360,11 @@ public class HudActivity
     }
 
     public boolean isOverThreshold(double[] mobile, double[] wear) {
-        Log.d("emergency", "\nmobile:"
-            + mobile[0] + "," + mobile[1] + "," + mobile[2]);
-        Log.d("emergency", "\nwear:"
-            + wear[0] + "," + wear[1] + "," + wear[2]);
-        if ((Math.abs(mobile[0]) > 8.0 || Math.abs(mobile[1]) > 8.0 || Math.abs(mobile[2]) > 8.0) && (Math.abs(wear[0]) > 8.0 || Math.abs(wear[1]) > 8.0 || Math.abs(wear[2]) > 8.0))
+//        Log.d("emergency", "\nmobile:"
+//            + mobile[0] + "," + mobile[1] + "," + mobile[2]);
+//        Log.d("emergency", "\nwear:"
+//            + wear[0] + "," + wear[1] + "," + wear[2]);
+        if ((Math.abs(mobile[0]) > 29.0 || Math.abs(mobile[1]) > 29.0 || Math.abs(mobile[2]) > 29.0))// && (Math.abs(wear[0]) > 6.0 || Math.abs(wear[1]) > 6.0 || Math.abs(wear[2]) > 6.0))
         {
             Log.d("emergency", "threshold reached!");
             return true;
@@ -671,7 +665,7 @@ public class HudActivity
 
             // If point is not the last one, add delimeter for next item.
             if (point != altitude.get(altitude.size()-1))
-                encodedAltitude = encodedAltitude + ",";
+                encodedAltitude = encodedAltitude + ";";
         }
 
         // Encode speed.
@@ -684,7 +678,7 @@ public class HudActivity
 
             // If point is not the last one, add delimeter for next item.
             if (point != speed.get(altitude.size()-1))
-                encodedSpeed = encodedSpeed + ",";
+                encodedSpeed = encodedSpeed + ";";
         }
 
         // Encode distance.
@@ -807,7 +801,7 @@ public class HudActivity
 
         // Convert to stream.
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        src.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, baos);
+        src.compress(Bitmap.CompressFormat.PNG, 100, baos);
 
         // Convert to byte array.
         byte[] b = baos.toByteArray();
@@ -851,10 +845,12 @@ public class HudActivity
             dbHelper = new DatabaseHelper(getApplicationContext());
             // Instance of local SQLite database
             db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+            dbHelper.createTables(db);
 
             saveRouteToLocalDB();
 
             db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+            dbHelper.createTables(db);
 
             saveDBToCloud();
 
@@ -878,7 +874,10 @@ public class HudActivity
         int I=0;
         if(temp!=null)
         while(I<temp.size()) {
-            temp.get(I).setIdentify(temp.get(I).getIdentify().substring(0,19));
+            String id = temp.get(I).getIdentify().substring((temp.get(I).getIdentify().length()-10),(temp.get(I).getIdentify().length() - 1));
+            temp.get(I).setIdentify(id);
+            temp.get(I).setFacebookID(id);
+            temp.get(I).setCustomerName(id);
             I++;
         }
         dbHelper.Savetothecloud(temp, null, null);

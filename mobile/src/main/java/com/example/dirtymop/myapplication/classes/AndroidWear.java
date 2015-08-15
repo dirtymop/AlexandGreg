@@ -86,7 +86,7 @@ public class AndroidWear
                     b.putFloat("y-axis", dataMap.getFloat("y-axis"));
                     b.putFloat("z-axis", dataMap.getFloat("z-axis"));
                     m.setData(b);
-                    wearHandler.sendMessage(m);
+//                    wearHandler.sendMessage(m);
                 }
 
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
@@ -154,8 +154,6 @@ public class AndroidWear
     *
     * */
     public void sendLatLng(LatLng data) {
-
-        Toast.makeText(context, "sending coordinates to wear!", Toast.LENGTH_SHORT).show();
         new DataTask().execute(data);
     }
 

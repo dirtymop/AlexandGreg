@@ -20,7 +20,9 @@ import com.example.dirtymop.myapplication.fragments.StoredMapSelection;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements View.OnClickListener {
@@ -67,13 +69,69 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
         TextView time= (TextView) row.findViewById(R.id.timeHistoryView);
         ImageView mapSnapshot = (ImageView) row.findViewById(R.id.mapSnapshot);
 
+        // Analyze data
+        float top_speed = 0;
+        float avg_speed = 0;
+        double avg_elevation = 0.0;
 
-        topspeed.setText(entries.get(position).getTop_speed());
+
+
+        String parts1[] = entries.get(position).getAvgspeed().split(";");
+        Log.d("entry", parts1.toString());
+        int I=0;
+        if (parts1 != null)
+        {
+            while(I<parts1.length)
+            {
+                String sValue = parts1[I];
+                float dValue = Float.parseFloat(sValue);
+
+                // Sum the speeds.
+                avg_speed = avg_speed + dValue;
+                // Get maximum speed.
+                if (I == 0) top_speed = dValue;
+                else
+                    if (dValue > top_speed) top_speed = dValue;
+
+                I++;
+            }
+
+            // Average the speed.
+            avg_speed = avg_speed/I;
+        }
+
+        String parts2[] = entries.get(position).getElevation().split(";");
+        Log.d("entry", parts2.toString());
+        I=0;
+        if (parts2 != null)
+        {
+            while(I<parts2.length)
+            {
+                String sValue = parts2[I];
+                Double dValue = Double.parseDouble(sValue);
+
+                // Sum the speeds.
+                avg_elevation = avg_elevation + dValue;
+
+                I++;
+            }
+
+            // Average the speed.
+            avg_elevation = avg_elevation/I;
+        }
+
+        // Create a DateFormatter object for displaying date in specified format.
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(Long.parseLong(entries.get(position).getTime()));
+
+        topspeed.setText(Float.toString(avg_speed));//String.format("%.2f", Float.toString(avg_speed)));//entries.get(position).getTop_speed()
         date.setText(entries.get(position).getDate());
-        time.setText(entries.get(position).getTime());
+        time.setText(formatter.format(calendar.getTime()));//entries.get(position).getTime());
         distance.setText(entries.get(position).getDistance());
-        speed.setText(entries.get(position).getAvgspeed());
-        elevation.setText(entries.get(position).getElevation());
+        speed.setText(Float.toString(avg_speed));//String.format("%.2f", Float.toString(avg_speed)));//entries.get(position).getAvgspeed()
+        elevation.setText(Double.toString(avg_elevation));//String.format("%.2f", Double.toString(avg_speed)));//entries.get(position).getElevation()
         mapSnapshot.setImageBitmap(StringToBitMap(entries.get(position).getIdentify()));
 
         row.setTag(new String[]{((Integer) position).toString()});

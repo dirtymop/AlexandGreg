@@ -392,8 +392,10 @@ public HistoryTable theHistorytable;
     public void Savetothecloud(ArrayList<HistoryTable> ht,ContactsTable ct, PreferencesTable pt)
     {
 
-        while(!ht.isEmpty()) {
-            new Saveahistoryentry(this.context).execute(ht.remove(0));
+        if (ht != null) {
+            while (!ht.isEmpty()) {
+                new Saveahistoryentry(this.context).execute(ht.remove(0));
+            }
         }
 //        new SaveaContactsentry(this.context).execute(ct);
 //        new SaveaPerferencesentry(this.context).execute(pt);

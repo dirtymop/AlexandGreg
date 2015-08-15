@@ -162,6 +162,7 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
         try {
             byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
             Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            encodeByte = null;
             return bitmap;
         } catch(Exception e) {
             e.getMessage();

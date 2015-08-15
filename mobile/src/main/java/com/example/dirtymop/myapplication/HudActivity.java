@@ -780,10 +780,39 @@ public class HudActivity
         return ("" + Calendar.getInstance().getTimeInMillis());
     }
 
-    public static String convertBitmapToString(Bitmap src) {
+    public Bitmap cropBitmap(Bitmap src) {
+        if (src.getWidth() >= src.getHeight()) {
+            return Bitmap.createBitmap(
+                    src,
+                    (src.getWidth()/2 - src.getHeight()/2),
+                    0,
+                    src.getHeight(),
+                    src.getHeight()
+            );
+        }
+        else {
+            return Bitmap.createBitmap(
+                    src,
+                    0,
+                    (src.getHeight()/2 - src.getWidth()/2),
+                    src.getWidth(),
+                    src.getWidth()
+            );
+        }
+    }
+
+    public String convertBitmapToString(Bitmap src) {
+        // Crop the image.
+        src = cropBitmap(src);
+
+        // Convert to stream.
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         src.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, baos);
+
+        // Convert to byte array.
         byte[] b = baos.toByteArray();
+
+        // Send string-encoded byte array.
         return Base64.encodeToString(b, Base64.DEFAULT);
     }
 

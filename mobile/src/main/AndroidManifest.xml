@@ -51,6 +51,7 @@
         <activity
             android:name=".Login"
             android:label="@string/title_activity_login" >
+
         </activity>
 
         <!-- Main Activitiy -->
@@ -68,11 +69,12 @@
         <activity
             android:name=".RoutePlannerActivity"
             android:label="@string/title_activity_route_planner" >
-
             <intent-filter>
                 <action android:name="ANDROID.INTENT.ACTION.MAIN" />
+
                 <category android:name="ANDROID.INTENT.CATEGORY.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <!-- HUD -->

@@ -878,7 +878,7 @@ public class HudActivity
         int I=0;
         if(temp!=null)
         while(I<temp.size()) {
-            temp.get(I).setIdentify("bitmaptoolarge");
+            temp.get(I).setIdentify(temp.get(I).getIdentify().substring(0,19));
             I++;
         }
         dbHelper.Savetothecloud(temp, null, null);

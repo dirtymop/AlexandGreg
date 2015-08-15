@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +17,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidplot.util.PlotStatistics;
+import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
 import com.example.dirtymop.myapplication.R;
 import com.example.dirtymop.myapplication.classes.DatabaseHelper;
 import com.example.dirtymop.myapplication.classes.HistoryTable;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +50,11 @@ public class EntryExpansionFragment extends Fragment {
     private static final String DB_FILENAME = "local.db";
 
     private OnFragmentInteractionListener mListener;
+
+    // Plotting
+    private XYPlot plot;
+    private SimpleXYSeries altitudeSeries;//, xAccelerationSeries, yAccelerationSeries, zAccelerationSeries;
+    private PlotStatistics altiStats;
 
 
     // TODO: Rename and change types and number of parameters
@@ -81,8 +95,47 @@ public class EntryExpansionFragment extends Fragment {
             TextView title = (TextView) view.findViewById(R.id.title);
             ImageView mapEntryImage = (ImageView) view.findViewById(R.id.mapEntryImage);
 
-            title.setText(entry.getFacebookID() + "'s Cycle, " + entry.getDate() + " @ " + entry.getTime());
+            // Create a DateFormatter object for displaying date in specified format.
+            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+            // Create a calendar object that will convert the date and time value in milliseconds to date.
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.parseLong(entry.getTime()));
+
+            // Set the text and image elements.
+            title.setText("Your route on " + entry.getDate() + " @ " + formatter.format(calendar.getTime()));
             mapEntryImage.setImageBitmap(StringToBitMap(entry.getIdentify()));
+
+            // Plotting
+            ArrayList<Double> altitude = new ArrayList<Double>();
+            String parts[] = entry.getElevation().split(";");
+            Log.d("entry", parts.toString());
+            int I=0;
+            if (parts != null)
+            {
+                while(I<parts.length)
+                {
+                    String sValue = parts[I];
+                    Double dValue = Double.parseDouble(sValue);
+                    altitude.add(dValue);
+                    I++;
+                }
+            }
+
+            if (altitude != null) {
+                plot = (XYPlot) view.findViewById(R.id.altitudeXYPlot);
+                altitudeSeries = new SimpleXYSeries("altitude");
+                plot.setDomainBoundaries(0, altitude.size(), BoundaryMode.AUTO);
+                plot.setRangeBoundaries(0, altitude.size(), BoundaryMode.AUTO);
+                plot.setTitle("Altitude variation");
+                plot.addSeries(altitudeSeries, new LineAndPointFormatter(Color.BLUE, Color.BLUE, Color.BLUE, null));
+                altiStats = new PlotStatistics(1000, false);
+                plot.addListener(altiStats);
+
+                for (int i = 0; i < altitude.size(); i++) {
+                    altitudeSeries.addLast(i, altitude.get(i));
+                }
+                plot.redraw();
+            }
         }
         else {
             Toast.makeText(getActivity(), "no matching entries.", Toast.LENGTH_SHORT).show();

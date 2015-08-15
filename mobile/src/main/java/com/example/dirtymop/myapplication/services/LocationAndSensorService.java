@@ -273,8 +273,8 @@ public class LocationAndSensorService
     // Registers event listeners for each sensor.
     public void startSensors() {
         // Register listeners for each sensor
-        sensorManager.registerListener(sensorEventListener, gyroscope, SensorManager.SENSOR_DELAY_GAME);
-        sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(sensorEventListener, gyroscope, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     // Unregister the sensors with the sensor manager.
@@ -289,7 +289,7 @@ public class LocationAndSensorService
 
             // Determine which sensor triggered the event listener
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                if (sensorDelay == 10) {
+                if (sensorDelay == 1) {
                     sensorDelay = 0;
                     processAccelerometer("mobile", new float[] {event.values[0], event.values[1], event.values[2]});
                 } else {

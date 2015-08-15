@@ -25,7 +25,7 @@ import com.facebook.login.widget.LoginButton;
 
 
 public class Login extends ActionBarActivity {
-    public static final String PREFS_NAME = "firstName";
+    public static final String PREFS_NAME = "facebookstuff";
     Button checkuser;
     LoginButton loginButton;
     CallbackManager callbackManager;
@@ -76,9 +76,9 @@ public class Login extends ActionBarActivity {
 
 
 
-                Intent intent = new Intent(Login.this, RoutePlannerActivity.class);
-                startActivity(intent);
-                finish();
+             //   Intent intent = new Intent(Login.this, RoutePlannerActivity.class);
+              //  startActivity(intent);
+              //  finish();
             }
                 }
         else
@@ -91,27 +91,46 @@ public class Login extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
+
+                String firstname = Profile.getCurrentProfile().getFirstName();
+                String facebookidnumber= Profile.getCurrentProfile().getId();
+                AccessToken x = AccessToken.getCurrentAccessToken();
+                String y = x.toString();
+
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("firstName", firstname);
+                editor.putString("iD", facebookidnumber);
+
                 Log.d("tag1", loginButton.getLoginBehavior().toString());
 
 
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 Profile profile = Profile.getCurrentProfile();
 
+                Intent intent = new Intent(Login.this, RoutePlannerActivity.class);
+                startActivity(intent);
+                  finish();
 
                 //Attempts to recognize if the user has logged in before
                 if (accessToken != null) {
                     if (profile != null) {
 
                         String b= Profile.getCurrentProfile().getFirstName();
-                        AccessToken x = AccessToken.getCurrentAccessToken();
-                        String y = x.toString();
-                        Log.d("tag2",b + y);
+                        AccessToken d = AccessToken.getCurrentAccessToken();
+                        String z = x.toString();
+                        Log.d("tag2",d + z);
 
                     }
                 } else {
                     Log.d("tag2", "NUll user info");
                 }
             }
+
+
+
+
+
         });
 
 
@@ -122,9 +141,9 @@ public class Login extends ActionBarActivity {
             public void onSuccess(LoginResult loginResult) {
 
                 Log.d("tag1", "onSuccess");
-                Intent intent = new Intent(Login.this, RoutePlannerActivity.class);
-                startActivity(intent);
-                finish();
+             //   Intent intent = new Intent(Login.this, RoutePlannerActivity.class);
+             //   startActivity(intent);
+             //   finish();
 
             }
 
@@ -144,21 +163,7 @@ public class Login extends ActionBarActivity {
         });
 
 
-//        loginButton.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                Log.d("tag1", "onCLick");
-//
-//           //     loginButton.notify();
-//
-////                Intent intent = new Intent(MainActivity.this, FacebookActivity.class);
-////                startActivity(intent);
-//
-//                callbackManager.onActivityResult();
-//
-//
-//
-//            }
-//        });
+
 
 
     }

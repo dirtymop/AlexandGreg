@@ -1,6 +1,7 @@
 package com.example.dirtymop.myapplication.fragments;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -81,7 +82,16 @@ public class EntryExpansionFragment extends Fragment {
             TextView title = (TextView) view.findViewById(R.id.title);
             ImageView mapEntryImage = (ImageView) view.findViewById(R.id.mapEntryImage);
 
-            title.setText(entry.getFacebookID() + "'s Cycle, " + entry.getDate() + " @ " + entry.getTime());
+            // get shared prefs that contain facebook id
+            String PREFS_NAME = "facebookstuff";
+
+            SharedPreferences settings =getActivity().getSharedPreferences(PREFS_NAME, 0);
+            String firstname="";
+           firstname = settings.getString("FirstName","greg linne");
+
+
+
+            title.setText(firstname + "'s Cycle, " + entry.getDate() + " @ " + entry.getTime());
             mapEntryImage.setImageBitmap(StringToBitMap(entry.getIdentify()));
         }
         else {

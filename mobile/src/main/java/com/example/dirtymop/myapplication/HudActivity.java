@@ -874,6 +874,13 @@ public class HudActivity
     }
 
     private void saveDBToCloud() {
-        dbHelper.Savetothecloud(dbHelper.getHistoryEntry(db), null, null);
+       ArrayList<HistoryTable> temp=dbHelper.getHistoryEntry(db);
+        int I=0;
+        if(temp!=null)
+        while(I<temp.size()) {
+            temp.get(I).setIdentify("bitmaptoolarge");
+            I++;
+        }
+        dbHelper.Savetothecloud(temp, null, null);
     }
 }

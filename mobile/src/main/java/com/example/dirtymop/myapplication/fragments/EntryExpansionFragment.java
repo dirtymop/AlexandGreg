@@ -1,6 +1,7 @@
 package com.example.dirtymop.myapplication.fragments;
 
 import android.app.Activity;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,11 +11,17 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dirtymop.myapplication.R;
+import com.example.dirtymop.myapplication.classes.DatabaseHelper;
+import com.example.dirtymop.myapplication.classes.HistoryTable;
 
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +38,7 @@ public class EntryExpansionFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private String unique_id;
+    private static final String DB_FILENAME = "local.db";
 
     private OnFragmentInteractionListener mListener;
 
@@ -61,12 +69,38 @@ public class EntryExpansionFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_entry_expansion, container, false);
 
-        // Initialze view members.
-        TextView title = (TextView) view.findViewById(R.id.title);
-        title.setText(this.unique_id);
+        // Initialize database objects
+        DatabaseHelper dbHelper = new DatabaseHelper(this.getActivity().getApplicationContext());
+        SQLiteDatabase db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+
+        // Get all elements from database.
+        HistoryTable entry = dbHelper.getSingleHistoryEntry(db, unique_id);
+
+        if (entry != null) {
+            // Initialze view members.
+            TextView title = (TextView) view.findViewById(R.id.title);
+            ImageView mapEntryImage = (ImageView) view.findViewById(R.id.mapEntryImage);
+
+            title.setText(entry.getFacebookID() + "'s Cycle, " + entry.getDate() + " @ " + entry.getTime());
+            mapEntryImage.setImageBitmap(StringToBitMap(entry.getIdentify()));
+        }
+        else {
+            Toast.makeText(getActivity(), "no matching entries.", Toast.LENGTH_SHORT).show();
+        }
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public Bitmap StringToBitMap(String encodedString){
+        try {
+            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch(Exception e) {
+            e.getMessage();
+            return null;
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

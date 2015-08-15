@@ -395,11 +395,8 @@ public HistoryTable theHistorytable;
         while(!ht.isEmpty()) {
             new Saveahistoryentry(this.context).execute(ht.remove(0));
         }
-        new SaveaContactsentry(this.context).execute(ct);
-        new SaveaPerferencesentry(this.context).execute(pt);
-
-
-
+//        new SaveaContactsentry(this.context).execute(ct);
+//        new SaveaPerferencesentry(this.context).execute(pt);
 
     }
     private class Saveahistoryentry extends AsyncTask<HistoryTable, Integer, Integer>

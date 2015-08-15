@@ -93,7 +93,7 @@ public class HistoryEntryAdapter extends ArrayAdapter<HistoryTable> implements V
         Log.d("adapter", "item clicked: " + indexInAdapter);
 
         // get the item and pass to the activity
-        this.fragment.loadExpansion(entries.get(indexInAdapter).getFacebookID()); // NEEDS UNIQUE_ID
+        this.fragment.loadExpansion(entries.get(indexInAdapter).getIdentify()); // NEEDS UNIQUE_ID
     }
     @Override
     public void add(HistoryTable object) {

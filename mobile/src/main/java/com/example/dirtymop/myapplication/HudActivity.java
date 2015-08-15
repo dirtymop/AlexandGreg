@@ -637,10 +637,10 @@ public class HudActivity
 
     // Save route to local database
     public void saveRouteToLocalDB() {
-        // Instance of database helper class
-        dbHelper = new DatabaseHelper(this);
-        // Instance of local SQLite database
-        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+//        // Instance of database helper class
+//        dbHelper = new DatabaseHelper(this);
+//        // Instance of local SQLite database
+//        db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
 
         // TODO: put data into local DB here
         //
@@ -847,7 +847,18 @@ public class HudActivity
         @Override
         protected Void doInBackground(Void... params) {
 
+            // Instance of database helper class
+            dbHelper = new DatabaseHelper(getApplicationContext());
+            // Instance of local SQLite database
+            db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+
             saveRouteToLocalDB();
+
+            db = dbHelper.databaseOpenOrCreate(DB_FILENAME);
+
+            saveDBToCloud();
+
+            db.close();
 
             return null;
         }
@@ -860,5 +871,9 @@ public class HudActivity
 
             finish();
         }
+    }
+
+    private void saveDBToCloud() {
+        dbHelper.Savetothecloud(dbHelper.getHistoryEntry(db), null, null);
     }
 }
